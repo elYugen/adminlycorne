@@ -1,0 +1,26 @@
+services:
+
+  database:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lycorne
+      MYSQL_USER: lycorne
+      MYSQL_PASSWORD: lycorne
+    volumes:
+      - dbdata:/var/lib/mysql
+
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin
+    environment:
+      PMA_HOST: database
+    ports:
+      - "8081:80"
+    depends_on:
+      - database
+
+volumes:
+  dbdata:
