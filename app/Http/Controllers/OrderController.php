@@ -23,4 +23,14 @@ class OrderController extends Controller
         return view('orders.index', compact('commandes', 'clients', 'produits'));
     }
 
+    public function create(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'conseiller_id' => 'required|exists:users,id',
+            'date_commande' => 'required|date',
+            'modalites_paiement' => 'nullable|string',
+            'produits' => 'required|array',
+        ]);
+    }
 }

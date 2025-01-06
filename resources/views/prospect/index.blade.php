@@ -1,11 +1,11 @@
 @extends('layouts.base')
-@section('title', 'Gestion des utilisateurs')
+@section('title', 'Gestion des entreprises')
     
 @section('content')
     @include('layouts.components.navbar')
 
     <div class="container">
-        <h1 class="mt-4">Gestion des utilisateurs</h1>
+        <h1 class="mt-4">Gestion des entreprises</h1>
 
         <!-- Affiche un message de succès -->
         @if(session('success'))
@@ -17,7 +17,7 @@
             <!-- Bouton pour créer un utilisateur -->
     <div class="mt-4 mb-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUser">
-            <i class="bi bi-person-plus"></i> Ajouter un utilisateur
+            <i class="bi bi-person-plus"></i> Ajouter une entreprise
         </button>
     </div>
 
@@ -27,17 +27,25 @@
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Nom</th>
+                    <th>Nom Prénom</th>
                     <th>Email</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Entreprise</th>
+                    <th>Siret</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($users as $user)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->gender === 'homme' ? 'Mr' : 'Mme' }}. {{ $user->firstname }} {{ $user->lastname }} </td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->address }}, {{ $user->postal_code }}</td>
+                    <td>{{ $user->phone_number }}</td>
+                    <td>{{ $user->company }}</td>
+                    <td>{{ $user->siret }}</td>
                     <td>
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}">
                             <i class="bi bi-pencil"></i> Modifier
@@ -52,8 +60,10 @@
         </table>
     </div>
 </div>
-
+<div class="d-flex justify-content-center">
+    {{ $users->links() }}
+</div>
     </div>
 @endsection
 
-@include('layouts.components.user_modal')
+@include('layouts.components.prospect_modal')

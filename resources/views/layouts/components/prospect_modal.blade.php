@@ -3,20 +3,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="createUserLabel">Créer un nouvel utilisateur</h1>
+          <h1 class="modal-title fs-5" id="createUserLabel">Ajouter une nouvelle entreprise</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="{{ route('users.create')}}" method="post">
+          <form action="{{ route('prospect.create')}}" method="post">
             @csrf
             <label>Prenom : </label>
-            <input type="text" name="name" class="form-control">
+            <input type="text" name="firstname" class="form-control">
             <br>
             <label>Nom :</label>
             <input type="text" name="lastname" class="form-control">
             <br>
             <label>Civilié :</label>
-            <select name="civilite"class="form-control">
+            <select name="gender"class="form-control">
                 <option value="homme">Homme</option>
                 <option value="femme">Femme</option>
             </select>
@@ -33,7 +33,7 @@
             <input type="text" name="postal_code" class="form-control">
             <br>
             <label>Entreprise :</label>
-            <input type="text" name="entreprise" class="form-control">
+            <input type="text" name="company" class="form-control">
             <br>
             <label>Siret :</label>
             <input type="text" name="siret" class="form-control">
@@ -55,7 +55,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
           </div>
           <div class="modal-body">
-              <form action="{{ route('users.edit', $user->id) }}" method="post">
+              <form action="{{ route('prospect.edit', $user->id) }}" method="post">
                   @csrf
                   @method('PUT')
                   
@@ -114,7 +114,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="{{ route('users.delete', $user->id)}}" method="post">
+            <form action="{{ route('prospect.delete', $user->id)}}" method="post">
               @csrf
               @method('DELETE') 
               <button type="submit" class="btn btn-danger">Supprimer</button>
