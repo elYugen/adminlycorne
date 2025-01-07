@@ -7,29 +7,37 @@
 <div class="container">
     <h1 class="mt-4">Gestion des commandes</h1>
 
-    <!-- Message de succès -->
+    <!-- gestion de succès et erreur -->
     @if(session('success'))
     <div class="alert alert-success mt-3">
         {{ session('success') }}
     </div>
     @endif
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-    <!-- Bouton pour créer une commande -->
     <div class="mt-4 mb-4">
-        <a href="" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Créer une commande
-        </a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commandeModal">
+            <i class="bi bi-person-plus"></i> Créer une commande
+        </button>
     </div>
 
-    <!-- Filtre par client -->
+    <!-- filtrer par client -->
     <form action="{{ route('orders.index') }}" method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-8">
                 <select name="client_id" class="form-select">
-                    <option value="">Liste des clients</option>
+                    <option value="">Liste des clients ---></option>
                     @foreach($clients as $client)
                         <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>
-                            {{ $client->nom }}
+                            {{ $client->firstname }} {{ $client->lastname }}
                         </option>
                     @endforeach
                 </select>
@@ -39,31 +47,32 @@
             </div>
         </div>
     </form>
-
-    <!-- Tableau des commandes -->
+    
+    <!-- tableau des commandes -->
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Client</th>
-                <th>Conseiller</th>
                 <th>Date</th>
+                <th>Produit</th>
+                <th>Total HT</th>
                 <th>Total TTC</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse($commandes as $commande)
             <tr>
                 <td>{{ $commande->numero_commande }}</td>
-                <td>{{ $commande->client->nom }}</td>
-                <td>{{ $commande->conseiller->name }}</td>
-                <td>{{ $commande->date_commande->format('d/m/Y') }}</td>
-                <td>{{ number_format($commande->total_ttc, 2, ',', ' ') }} €</td>
+                <td>{{ $commande->client->firstname }} {{ $commande->client->lastname }}</td>
+                <td>{{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</td>
                 <td>
-                    <a href="{{ route('orders.show', $commande->id) }}" class="btn btn-sm btn-primary">Voir</a>
-                    <a href="{{ route('orders.edit', $commande->id) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    @foreach($commande->produits as $produit)
+                        {{ $produit->nom }} ({{ $produit->pivot->quantite }} x {{ $produit->pivot->prix_ht }} € HT) <br>
+                    @endforeach
                 </td>
+                <td>{{ $commande->total_ht }} € HT</td>
+                <td>{{ $commande->total_ttc }} € TTC</td>
             </tr>
             @empty
             <tr>
@@ -73,7 +82,9 @@
         </tbody>
     </table>
 
-    <!-- Pagination -->
+
     {{ $commandes->links() }}
 </div>
 @endsection
+
+@include('layouts.components.order_modal')

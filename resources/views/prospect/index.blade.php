@@ -7,21 +7,18 @@
     <div class="container">
         <h1 class="mt-4">Gestion des entreprises</h1>
 
-        <!-- Affiche un message de succès -->
         @if(session('success'))
         <div class="alert alert-success mt-3">
             {{ session('success') }}
         </div>
         @endif
 
-            <!-- Bouton pour créer un utilisateur -->
     <div class="mt-4 mb-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUser">
             <i class="bi bi-person-plus"></i> Ajouter une entreprise
         </button>
     </div>
 
-    <!-- Tableau des utilisateurs -->
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="table-dark">

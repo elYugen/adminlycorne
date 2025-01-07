@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BcCommandes extends Model
 {
     protected $table = 'bc_commandes';
+    protected $dates = ['date_commande'];
 
     protected $fillable = [
         'numero_commande',
@@ -20,16 +21,16 @@ class BcCommandes extends Model
 
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Prospect::class);
     }
 
     public function conseiller()
     {
-        return $this->belongsTo(BcConseiller::class, 'conseiller_id');
+        return $this->belongsTo(BcUtilisateur::class, 'conseiller_id');
     }
 
     public function produits()
     {
-        return $this->hasMany(BcCommandeProduits::class, 'commande_id');
+        return $this->belongsToMany(Produits::class, 'bc_commande_produits', 'commande_id', 'produit_id')->withPivot('quantite', 'prix_unitaire_ht'); 
     }
 }

@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     // Route lié aux commandes
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
-        Route::post('/create', [OrderController::class, 'create'])->name('orders.store');
+        Route::post('/create', [OrderController::class, 'create'])->name('orders.create');
     });
 
     // Route lié aux utilisateurs
