@@ -11,14 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bc_status', function (Blueprint $table) {
-            $table->id();
-            $table->string('status');
-            $table->foreign('order_id')->references('id')->on('bc_commandes');
-            $table->boolean('is_cgv_validated');
-            $table->datetime('order_date');
+        Schema::table('bc_commandes', function (Blueprint $table) {
             $table->boolean('isProcessed');
-            $table->timestamps();
+            $table->boolean('is_cgv_validated');
         });
     }
 
@@ -27,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bc_status');
+        Schema::table('bc_commandes', function (Blueprint $table) {
+            //
+        });
     }
 };

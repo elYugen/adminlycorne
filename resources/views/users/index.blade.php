@@ -7,14 +7,23 @@
     <div class="container">
         <h1 class="mt-4">Gestion des utilisateurs</h1>
 
-        <!-- Affiche un message de succès -->
+        <!-- Affiche un message de succès et d'erreur-->
         @if(session('success'))
         <div class="alert alert-success mt-3">
             {{ session('success') }}
         </div>
         @endif
 
-            <!-- Bouton pour créer un utilisateur -->
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
     <div class="mt-4 mb-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUser">
             <i class="bi bi-person-plus"></i> Ajouter un utilisateur

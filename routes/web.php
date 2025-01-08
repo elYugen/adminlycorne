@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'index'])->name('auth.index');
 Route::post('/auth/login', [AuthController::class, 'authenticate'])->name('auth.authenticate');
 
+Route::get('/orders/{commande}/confirm', [OrderController::class, 'showCgv'])->name('orders.showCgv');
+Route::post('/orders/{commande}/confirm', [OrderController::class, 'validateCgv'])->name('orders.confirm');
+
 // Route protégées
 Route::middleware('auth')->group(function () {
     
@@ -32,11 +35,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::post('/create', [OrderController::class, 'create'])->name('orders.create');
+        Route::put('/processed/{commande}', [OrderController::class, 'processedOrder'])->name('orders.processed');
     });
 
     // Route lié aux utilisateurs
     Route::prefix('user')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');
         Route::post('/create', [UserController::class, 'create'])->name('user.create');
+        Route::put('/edit/{bcuser}', [UserController::class, 'edit'])->name('user.edit');
+        Route::delete('/delete/{bcuser}', [UserController::class, 'delete'])->name('user.delete');
     });
 });

@@ -20,16 +20,39 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:bc_utilisateurs,email',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'role' => 'required|in:revendeur,administrateur',
 
         ]);
 
         BcUtilisateur::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'role' => $request->role
         ]);
 
         return redirect()->route('user.index')->with('success', 'Utilisateur crée avec succès');
+    }
+
+    public function edit(Request $request, BcUtilisateur $bcuser)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:bc_utilisateurs,email,' . $bcuser->id,
+            'role' => 'required|in:revendeur,administrateur',
+        ]);
+
+        $bcuser->update($request->only(['name', 'email', 'role']));
+
+
+        return redirect()->route('user.index')->with('success', 'Utilisateur mis à jour avec succès');
+    }
+
+    public function delete(BcUtilisateur $bcuser)
+    {
+        $bcuser->delete();
+
+        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé avec succès');
     }
 }

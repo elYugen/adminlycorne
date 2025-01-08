@@ -9,18 +9,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class BcUtilisateur extends Authenticatable
 {
-     /** @use HasFactory<\Database\Factories\UserFactory> */
-     use HasFactory, Notifiable;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable;
 
-     /**
-      * The attributes that are mass assignable.
-      *
-      * @var list<string>
-      */
+    /**
+    * The attributes that are mass assignable.
+    *
+    * @var list<string>
+    */
+    const ROLE_REVENDEUR = 'revendeur';
+    const ROLE_ADMINISTRATEUR = 'administrateur';
+
      protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
      ];
 
     /**

@@ -17,6 +17,9 @@ class BcCommandes extends Model
         'modalites_paiement',
         'total_ht',
         'total_ttc',
+        'is_cgv_validated',
+        'validatedAt',
+        'isProcessed'
     ];
 
     public function client()

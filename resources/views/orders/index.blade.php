@@ -58,6 +58,7 @@
                 <th>Produit</th>
                 <th>Total HT</th>
                 <th>Total TTC</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -68,11 +69,19 @@
                 <td>{{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</td>
                 <td>
                     @foreach($commande->produits as $produit)
-                        {{ $produit->nom }} ({{ $produit->pivot->quantite }} x {{ $produit->pivot->prix_ht }} € HT) <br>
+                        {{ $produit->nom }} ({{ $produit->pivot->quantite }} x {{ $produit->prix_ht }} € HT) <br>
                     @endforeach
                 </td>
                 <td>{{ $commande->total_ht }} € HT</td>
                 <td>{{ $commande->total_ttc }} € TTC</td>
+                <td>
+                    <form action="{{ route('orders.processed', $commande->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="isProcessed" value="1">
+                        <button type="submit" class="btn btn-warning btn-sm">Traité</button>
+                    </form>
+                </td>
             </tr>
             @empty
             <tr>

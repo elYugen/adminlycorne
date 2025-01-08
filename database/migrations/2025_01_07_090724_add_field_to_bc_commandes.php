@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('bc_status');
+        Schema::table('bc_commandes', function (Blueprint $table) {
+            $table->datetime('validatedAt')->nullable();
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bc_status');
+        Schema::table('bc_commandes', function (Blueprint $table) {
+            //
+        });
     }
 };

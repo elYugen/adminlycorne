@@ -46,10 +46,7 @@
                     </div>
 
                     <!-- Date de commande -->
-                    <div class="mb-3">
-                        <label for="date_commande" class="form-label">Date de commande</label>
-                        <input type="date" name="date_commande" id="date_commande" class="form-control" required>
-                    </div>
+
 
                     <!-- Produits -->
                     <div id="produitsList">
