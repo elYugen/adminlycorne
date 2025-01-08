@@ -1,4 +1,3 @@
-<!-- Modal de création de commande -->
 <div class="modal fade" id="commandeModal" tabindex="-1" aria-labelledby="commandeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -21,17 +20,15 @@
                                 <option value="{{ $client->id }}">{{ $client->firstname }} {{ $client->lastname }}</option>
                             @endforeach
                         </select>
+                        <button type="button" class="btn btn-primary" style="margin-top:10px" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                            Ajouter un client
+                        </button>
                     </div>
 
                     <!-- Conseiller -->
                     <div class="mb-3">
-                        <label for="conseiller_id" class="form-label">Conseiller</label>
-                        <select name="conseiller_id" id="conseiller_id" class="form-select" required>
-                            <option value="">Sélectionnez un conseiller</option>
-                            @foreach($conseillers as $conseiller)
-                                <option value="{{ $conseiller->id }}">{{ $conseiller->name }}</option>
-                            @endforeach
-                        </select>
+                        <!--<label for="conseiller_id" class="form-label">Conseiller</label>-->
+                        <input type="hidden" name="conseiller_id" value="{{ auth()->user()->id }}">
                     </div>
 
                     <!-- Modalité de paiement -->
@@ -96,7 +93,7 @@
 <script>
     let productIndex = 1;
 
-// Ajouter une ligne de produit
+// ajouter un produit
 document.getElementById('addProductRow').addEventListener('click', function () {
     const productRow = `
         <div class="row mb-2 produit-row">
@@ -128,14 +125,14 @@ document.getElementById('addProductRow').addEventListener('click', function () {
     updateTotals();
 });
 
-// Met à jour les totaux
+// met a jour le total
 document.addEventListener('input', function (e) {
     if (e.target.classList.contains('quantite-input') || e.target.classList.contains('produit-select')) {
         updateTotals();
     }
 });
 
-// Supprime une ligne de produit
+// suppr un produit
 document.addEventListener('click', function (e) {
     if (e.target.classList.contains('remove-product')) {
         e.target.closest('.produit-row').remove();
@@ -143,7 +140,7 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// Fonction pour recalculer les totaux
+// recalculer les totaux
 function updateTotals() {
     let totalHT = 0;
     document.querySelectorAll('.produit-row').forEach(row => {
@@ -158,6 +155,6 @@ function updateTotals() {
     });
 
     document.getElementById('totalHT').textContent = totalHT.toFixed(2);
-    document.getElementById('totalTTC').textContent = (totalHT * 1.2).toFixed(2); // Exemple avec TVA à 20 %
+    document.getElementById('totalTTC').textContent = (totalHT * 1.2).toFixed(2); // TVA à 20 %
 }
 </script>

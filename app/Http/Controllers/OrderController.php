@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\Produits;
 use App\Models\Prospect;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
@@ -19,6 +20,9 @@ class OrderController extends Controller
         $commandes = BcCommandes::with(['client', 'conseiller']) // chargement anticipé des relations
             ->when($request->client_id, function ($query, $client_id) { // active la fonction quand client_id est requêter
                 $query->where('client_id', $client_id); // ajoute le filtrage si applicable
+            })
+            ->when(Auth::user()->role === 'revendeur', function ($query) { // applique le filtre si l'utilisateur a le role revendeur, l'admin peut tout voir
+                $query->where('conseiller_id', Auth::user()->id); // montre que les commandes du conseiller connecté
             })
             ->where('isProcessed', 0) // retire les commandes avec isProcessed a 1
             ->paginate(10);
@@ -34,7 +38,6 @@ class OrderController extends Controller
     {
         $request->validate([
             'client_id' => 'required|exists:bc_prospects,id',
-            'conseiller_id' => 'required|exists:bc_utilisateurs,id',
             'modalite_paiement' => 'required|string',
             'produits' => 'required|array',
             'produits.*.produit_id' => 'required|exists:bc_produits,id',
@@ -51,7 +54,7 @@ class OrderController extends Controller
         $commande = BcCommandes::create([
             'numero_commande' => 'CMD-' . strtoupper(uniqid()), // génère un num de commande aléatoire
             'client_id' => $request->client_id,
-            'conseiller_id' => $request->conseiller_id,
+            'conseiller_id' => Auth::user()->id,
             'date_commande' => now(),
             'modalites_paiement' => $request->modalite_paiement,
             'total_ht' => $totalHT,
@@ -75,7 +78,7 @@ class OrderController extends Controller
         }
     
         // génération du pdf
-        $pdfdetail = $commande->load('client', 'produits');
+        $pdfdetail = $commande->load('client', 'produits', 'conseiller');
         $pdf = PDF::loadView('orders.purchaseOrder', ['commande' => $pdfdetail ]);
         $saveTo = public_path('bc/' . $commande->numero_commande . '.pdf');
         $pdf->save($saveTo);
