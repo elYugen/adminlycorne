@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
 class OrderStatus extends Mailable
 {
@@ -76,9 +77,10 @@ class OrderStatus extends Mailable
      */
     public function attachments(): array
     {
+
         return [
             Attachment::fromPath($this->pdfPath)
-                ->as($this->order->numero_commande . '.pdf')
+                ->as($this->order->numero_commande . '.pdf'),
         ];
     }
 }

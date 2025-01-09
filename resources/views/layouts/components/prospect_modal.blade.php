@@ -10,33 +10,36 @@
           <form action="{{ route('prospect.create')}}" method="post">
             @csrf
             <label>Prenom : </label>
-            <input type="text" name="firstname" class="form-control">
+            <input type="text" name="firstname" class="form-control" required>
             <br>
             <label>Nom :</label>
-            <input type="text" name="lastname" class="form-control">
+            <input type="text" name="lastname" class="form-control" required>
             <br>
             <label>Civilié :</label>
-            <select name="gender"class="form-control">
+            <select name="gender"class="form-control" required>
                 <option value="homme">Homme</option>
                 <option value="femme">Femme</option>
             </select>
             <label>Adresse mail : </label>
-            <input type="email" name="email" class="form-control">
+            <input type="email" name="email" class="form-control" required>
             <br>
             <label>Numéro de Téléphone : </label>
-            <input type="text" name="phone_number" class="form-control">
+            <input type="text" name="phone_number" class="form-control" required>
             <br>
             <label>Adresse :</label>
-            <input type="text" name="address" class="form-control">
+            <input type="text" name="address" class="form-control" required>
+            <br>
+            <label>Ville : </label>
+            <input type="text" name="city" class="form-control">
             <br>
             <label>Code postal :</label>
-            <input type="text" name="postal_code" class="form-control">
+            <input type="text" name="postal_code" class="form-control" required>
             <br>
             <label>Entreprise :</label>
-            <input type="text" name="company" class="form-control">
+            <input type="text" name="company" class="form-control" required>
             <br>
             <label>Siret :</label>
-            <input type="text" name="siret" class="form-control">
+            <input type="text" name="siret" class="form-control" required>
             <br>
             <button type="submit" class="btn btn-primary">Valider</button>
           </form>
@@ -46,7 +49,7 @@
   </div>
 
   @foreach ($users as $user)
-<!-- modal d'édition d'un utilisateur -->
+<!-- modal d'édition d'un client -->
 <div class="modal fade" id="editUser{{ $user->id }}" tabindex="-1" aria-labelledby="editUserLabel{{ $user->id }}" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
@@ -105,7 +108,7 @@
   </div>
 </div>
   
-    <!-- modal de suppression d'un utilisateur -->
+    <!-- modal de suppression d'un client -->
   <div class="modal fade" id="deleteUser{{ $user->id }}" tabindex="-1" aria-labelledby="deleteUserLabel{{ $user->id }}" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">

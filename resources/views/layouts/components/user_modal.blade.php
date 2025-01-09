@@ -44,13 +44,13 @@
             @csrf
             @method('PUT') 
             <label>Nom d'utilisateur :</label>
-            <input type="text" name="name" value="{{ $user->name }}" class="form-control">
+            <input type="text" name="name" value="{{ $user->name }}" class="form-control" required>
             <br>
             <label>Adresse mail :</label>
-            <input type="email" name="email" value="{{ $user->email }}" class="form-control">
+            <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
             <br>
             <label for="role{{ $user->id }}" class="form-label">Rôle :</label>
-            <select name="role" id="role{{ $user->id }}" class="form-select">
+            <select name="role" id="role{{ $user->id }}" class="form-select" required>
               <option value="revendeur" {{ $user->role === 'revendeur' ? 'selected' : '' }}>Revendeur</option>
               <option value="administrateur" {{ $user->role === 'administrateur' ? 'selected' : '' }}>Administrateur</option>          
             </select>

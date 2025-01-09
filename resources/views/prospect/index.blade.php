@@ -14,7 +14,7 @@
         @endif
 
     <div class="mt-4 mb-4">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUser">
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #b7b7c5; color: white;">
             <i class="bi bi-person-plus"></i> Ajouter une entreprise
         </button>
     </div>

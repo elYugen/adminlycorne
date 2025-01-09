@@ -4,168 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bon de commande - {{ $commande->numero_commande }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-<style>
-    body {
-        font-family: 'Roboto', sans-serif;
-        color: #362258;
-        max-width: 90%;
-        margin: 0 auto;
-        margin-top: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        min-height: 100vh;
-    }
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #362258;
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
 
-    header {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between; 
-    }
+        header {
+            width: 100%;
+            position: relative;
+            margin-bottom: 30px;
+        }
 
-    .headerLeft {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+        .headerLeft {
+            width: 50%;
+            float: left;
+        }
 
-    .headerLeft .companyInfo {
-        display: flex;
-        flex-direction: row;
-        gap: 50px;
-    }
+        .headerRight {
+            width: 45%;
+            float: right;
+        }
 
-    .headerRight {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+        .headerRight p {
+            margin: 0;
+            font-size: 10px;
+        }
 
-    .headerRight h2 {
-        text-decoration: underline;
-    }
+        .companyInfo {
+            margin-bottom: 20px;
+            overflow: hidden; /* Pour contenir les éléments flottants */
+        }
 
-    .headerRight p {
-        margin: 0;
-    }
+        .companyInfo img {
+            float: left;
+            width: 200px;
+            margin-right: 20px;
+        }
 
-    hr {
-        border: none;
-        height: 2px;
-        background-color: #362258;
-        margin: 20px 0;
-    }
+        .contact {
+            float: left;
+        }
 
-    footer {
-        margin-top: auto;
-        padding: 20px 0;
-        text-align: center;
-        width: 100%;
-    }
+        .contact p {
+            margin: 0;
+        }
 
-    footer p {
-        font-size: 0.9em;
-        line-height: 1.4;
-    }
+        .orderInfo p {
+            margin: 5px 0;
+        }
 
-    .orderTable {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    }
+        .orderInfo .numero {
+            display: block;
+            margin-bottom: 5px;
+        }
 
-    .orderTable th {
-        background-color: #362258;
-        color: white;
-        padding: 10px;
-        text-align: left;
-        border-bottom: none;
-    }
+        .orderInfo .date {
+            display: block;
+        }
 
-    .orderTable td, .orderTable th {
-        padding: 8px;
-        border-bottom: none;
-        text-align: center;
-    }
+        .headerRight h2 {
+            text-decoration: underline;
+            margin-bottom: 15px;
+        }
 
-    .orderTable td:not(:last-child),
-    .orderTable th:not(:last-child) {
-        border-right: 2px dotted #362258;
-    }
+        .clear {
+            clear: both;
+        }
 
-    .orderTable tr:last-child td {
-        border-bottom: none;
-    }
+        .orderTable {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+        }
 
-    .orderValidation {
-        background-color: #b7b7c5;
-        display: flex;
-        flex-direction: column;
-        padding: 20px; 
-        padding-left: 85px; 
-    }
+        .orderTable th {
+            background-color: #362258;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
 
-    .orderValidationDate {
-        display: flex;
-        flex-direction: row;
-        gap: 200px;
-    }
+        .orderTable td, .orderTable th {
+            padding: 8px;
+            text-align: center;
+            border-right: 2px dotted #362258;
+        }
 
-    .orderValidationDate p,
-    .orderValidationClient p {
-        margin: 0; 
-    }
+        .orderTable td:last-child,
+        .orderTable th:last-child {
+            border-right: none;
+        }
 
-    .orderValidationClient {
-        margin-top: 20px; 
-    }
+        .orderPayment {
+            width: 300px;
+            margin-left: auto;
+            margin-bottom: 20px;
+        }
 
-    .orderPayment {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        align-items: flex-end;
-        margin-left: auto;
-        width: 300px;
-    }
+        .orderPayment div {
+            overflow: hidden; /* Pour contenir les éléments flottants */
+            margin-bottom: 5px;
+        }
 
-    .orderPayment div {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        padding: 5px 0;
-    }
+        .orderPayment p {
+            float: left;
+            margin: 0;
+        }
 
-    .orderPayment p {
-        margin: 0;
-    }
+        .orderPayment p:last-child {
+            float: right;
+        }
 
-    .orderPayment .total-row {
-        border-top: 2px solid #362258;
-        margin-top: 5px;
-        padding-top: 10px;
-    }
+        .orderPayment .total-row {
+            border-top: 2px solid #362258;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
 
-</style>
+        .orderValidation {
+            background-color: #b7b7c5;
+            padding: 5px 30px;
+        }
+
+        .orderValidationDate {
+            margin-bottom: 20px;
+        }
+
+        .orderValidationDate p {
+            display: inline-block;
+            margin-right: 100px;
+        }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            border-top: 2px solid #362258;
+            padding-top: 20px;
+            position: absolute;
+            bottom: 0;
+            font-size: 11px;
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="headerLeft">
             <div class="companyInfo">
-                <img src="{{ asset('sd_laucarre.png') }}" alt="Logo" style="width: 50%;">
+                <img src="{{ asset('sd_laucarre.png') }}" alt="Logo">
                 <div class="contact">
                     <p><strong>SAS L AU CARRE</strong></p>
                     <p>Granoux 15 700 PLEAUX</p>
-                    <br>
                     <p>Mail : dpeyral@direo.fr</p>
-                    <p>Sitet : 804 485 167 000 22</p>
+                    <p>Siret : 804 485 167 000 22</p>
                 </div>
             </div>
             <div class="orderInfo">
-                <p>N° de commande / Date : {{ $commande->numero_commande }} {{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }} </p>
+                <p class="numero">N° de commande : {{ $commande->numero_commande }}</p>
+                <p class="date">Date : {{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</p>
                 <p>Conseiller : {{ $commande->conseiller->name }}</p>
             </div>
         </div>
@@ -173,12 +175,14 @@
             <h2>Bon de commande</h2>
             <p>Nom du client : {{ $commande->client->lastname }} {{ $commande->client->firstname }}</p>
             <p>Adresse : {{ $commande->client->address }}</p>
-            <p>Code postal : {{ $commande->client->postal_code }}<p>
-            <p>Ville : ......................................</p>
+            <p>Code postal : {{ $commande->client->postal_code }}</p>
+            <p>Ville : {{ $commande->client->city }}</p>
+            <p>Entreprise : {{ $commande->client->company }}</p>
             <p>Numéro siret : {{ $commande->client->siret }}</p>
             <p>Tél : {{ $commande->client->phone_number }}</p>
             <p>Mail : {{ $commande->client->email }}</p>
         </div>
+        <div class="clear"></div>
     </header>
 
     <table class="orderTable">
@@ -196,14 +200,14 @@
             <tr>
                 <td>{{ $produit->nom }}</td>
                 <td>{{ $produit->description }}</td>
-                <td>{{ $produit->quantite }}</td>
-                <td>{{ number_format($produit->prix_unitaire_ht, 2) }} €</td>
-                <td>{{ number_format($produit->total, 2) }} €</td>
+                <td>{{ number_format($produit->pivot->quantite) }}</td>
+                <td>{{ number_format($produit->pivot->prix_unitaire_ht, 2) }} €</td>
+                <td>{{ number_format($produit->pivot->prix_ht, 2) }} €</td>
             </tr>
             @endforeach
         </tbody>
     </table>
-    
+
     <div class="orderPayment">
         <div>
             <p><strong>Total HT :</strong></p>
@@ -220,17 +224,11 @@
     </div>
 
     <div class="orderValidation">
-            <div class="orderValidationDate">
-                <p>Fait le {{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }} :</p> <p>à* :</p>
-            </div>
-            <div class="orderValidationClient">
-                <p>Nom, prénom* : {{ $commande->client->lastname }} {{ $commande->client->firstname }}</p>
-            </div>
+        <div class="orderValidationDate">
+            <p>Fait le : {{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</p>
+        </div>
     </div>
 
-    <footer>
-        <hr>
-        <p><strong>L AU CARRE - SAS au capital de 2506 € - Granoux 15 700 PLEAUX - Siret : 804 485 167 000 22 - APE : 8299Z - RCS AURILLAC B 804 485 167</strong></p>
-    </footer>
+    <footer>L AU CARRE - SAS au capital de 2506 € - Granoux 15 700 PLEAUX - Siret : 804 485 167 000 22 <br> APE : 8299Z - RCS AURILLAC B 804 485 167</footer>
 </body>
 </html>

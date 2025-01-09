@@ -26,6 +26,7 @@ class ProspectController extends Controller
             'gender' => 'required|string|max:10',
             'address' => 'required|string|max:255',
             'postal_code' => 'required|string:15',
+            'city' => 'required|string|max:50',
         ]);
 
         Prospect::create([
@@ -37,7 +38,8 @@ class ProspectController extends Controller
             'address' => $request->address,
             'postal_code' => $request->postal_code,
             'company' => $request->company,
-            'siret' => $request->siret
+            'siret' => $request->siret,
+            'city' => $request->city
         ]);
 
         return redirect()->route('prospect.index')->with('success', 'Utilisateur crée avec succès');

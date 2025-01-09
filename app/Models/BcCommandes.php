@@ -19,7 +19,8 @@ class BcCommandes extends Model
         'total_ttc',
         'is_cgv_validated',
         'validatedAt',
-        'isProcessed'
+        'isProcessed',
+        'planification'
     ];
 
     public function client()
@@ -34,6 +35,6 @@ class BcCommandes extends Model
 
     public function produits()
     {
-        return $this->belongsToMany(Produits::class, 'bc_commande_produits', 'commande_id', 'produit_id')->withPivot('quantite', 'prix_unitaire_ht'); 
+        return $this->belongsToMany(Produits::class, 'bc_commande_produits', 'commande_id', 'produit_id')->withPivot('quantite', 'prix_unitaire_ht', 'prix_ht'); 
     }
 }

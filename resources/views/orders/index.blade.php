@@ -24,7 +24,7 @@
 @endif
 
     <div class="mt-4 mb-4">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#commandeModal">
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#commandeModal" style="background-color: #b7b7c5; color: white;">
             <i class="bi bi-person-plus"></i> Créer une commande
         </button>
     </div>
@@ -43,7 +43,7 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                <button type="submit" class="btn w-100" style="background-color: #b7b7c5; color: white;">Filtrer</button>
             </div>
         </div>
     </form>

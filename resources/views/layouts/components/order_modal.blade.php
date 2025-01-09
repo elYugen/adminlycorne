@@ -31,7 +31,7 @@
                         <input type="hidden" name="conseiller_id" value="{{ auth()->user()->id }}">
                     </div>
 
-                    <!-- Modalité de paiement -->
+                    <!-- Modalité de paiement 
                     <div class="mb-3">
                         <label for="modalite_paiement" class="form-label">Modalité de paiement</label>
                         <select name="modalite_paiement" id="modalite_paiement" class="form-select" required>
@@ -40,7 +40,7 @@
                             <option value="virement">Virement</option>
                             <option value="cheque">Chèque</option>
                         </select>
-                    </div>
+                    </div>-->
 
                     <!-- Date de commande -->
 
