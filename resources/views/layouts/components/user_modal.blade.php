@@ -23,7 +23,7 @@
               <option value="administrateur">Administrateur</option>          
             </select>
             <br>
-            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="submit" class="btn" style="background-color: #362258; color: white;">Valider</button>
           </form>
         </div>
       </div>

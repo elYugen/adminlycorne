@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\BcUtilisateur;
+
 return [
 
     /*
@@ -33,6 +35,12 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+
+    'stripe' => [
+        'model'  => BcUtilisateur::class,
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
     ],
 
 ];

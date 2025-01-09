@@ -38,7 +38,7 @@
 
         .companyInfo {
             margin-bottom: 20px;
-            overflow: hidden; /* Pour contenir les éléments flottants */
+            overflow: hidden;
         }
 
         .companyInfo img {
@@ -151,6 +151,20 @@
             bottom: 0;
             font-size: 11px;
         }
+
+        @page {
+            footer: html_footer;
+        }
+    
+        .page-number {
+            text-align: right;
+            font-size: 6pt;
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            background-color: white;
+            padding: 2px 5px;
+        }
     </style>
 </head>
 <body>
@@ -230,5 +244,8 @@
     </div>
 
     <footer>L AU CARRE - SAS au capital de 2506 € - Granoux 15 700 PLEAUX - Siret : 804 485 167 000 22 <br> APE : 8299Z - RCS AURILLAC B 804 485 167</footer>
+    <htmlpagefooter name="html_footer">
+        <div class="page-number">Page {PAGENO} / {nbpg}</div>
+    </htmlpagefooter>
 </body>
 </html>

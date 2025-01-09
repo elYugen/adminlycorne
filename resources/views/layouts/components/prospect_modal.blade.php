@@ -41,7 +41,7 @@
             <label>Siret :</label>
             <input type="text" name="siret" class="form-control" required>
             <br>
-            <button type="submit" class="btn btn-primary">Valider</button>
+            <button type="submit" class="btn" style="background-color: #362258; color: white;">Valider</button>
           </form>
         </div>
       </div>

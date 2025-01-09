@@ -33,6 +33,7 @@
         .numeric-section {
             margin-bottom: 10px;
         }
+
     </style>
 </head>
 <body>
@@ -126,6 +127,5 @@
         Vous pouvez accéder aux données vous concernant, les rectifier, demander leur effacement ou exercer votre droit à la limitation du traitement de vos données par mail à l'adresse david@lycorne.fr.<br><br>
         Dans le cadre de l'utilisation de logiciels qui ont leurs propres conditions générales d'utilisation, le Client est tenu de les accepter sur les supports en ligne de chaque logiciel.
     </div>
-
 </body>
 </html>

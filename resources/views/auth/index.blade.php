@@ -50,7 +50,7 @@ main {
           Se souvenir de moi
         </label>
       </div>
-      <button class="btn btn-primary w-100 py-2" type="submit">Connexion</button>
+      <button class="btn w-100 py-2" type="submit" style="background-color: #362258; color: white;">Connexion</button>
       <p class="mt-5 mb-3 text-body-secondary">&copy; 2024</p>
     </form>
   </main>

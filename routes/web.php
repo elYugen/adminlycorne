@@ -13,6 +13,8 @@ Route::post('/auth/login', [AuthController::class, 'authenticate'])->name('auth.
 
 Route::get('/orders/{commande}/confirm', [OrderController::class, 'showCgv'])->name('orders.showCgv');
 Route::post('/orders/{commande}/confirm', [OrderController::class, 'validateCgv'])->name('orders.confirm');
+Route::get('/orders/{commande}/finished', [OrderController::class, 'finishedCgv'])->name('orders.finishedCgv');
+
 
 // Route protégées
 Route::middleware('auth')->group(function () {

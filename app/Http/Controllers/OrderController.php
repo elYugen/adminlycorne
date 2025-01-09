@@ -11,6 +11,7 @@ use App\Models\Prospect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 use Webklex\PDFMerger\Facades\PDFMergerFacade;
@@ -113,7 +114,7 @@ class OrderController extends Controller
             
             // Configuration pour la pagination
             $pdf->SetFont('Helvetica', '', 6);
-            $pdf->SetY(-5);  // position à 15mm du bas
+            $pdf->SetY(1);  // position à 1mm du bas
             $pdf->SetX(-15); // position à 30mm de la droite
             $pdf->SetTextColor(0, 0, 0);
             
@@ -148,15 +149,21 @@ class OrderController extends Controller
             return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
         }
     
+        Log::info('Données reçues pour la commande:', $request->all());
+
+
         // validation des données du formulaire
         $validatedData = $request->validate([
             'modalite_paiement' => 'required|string|in:prelevement,virement,cheque',
             'planification' => 'required|string|in:annuel,trimestriel,semestriel,mensuel',
-            'iban' => 'required_if:modalite_paiement,prelevement|nullable|string|max:34',
-            'bic' => 'required_if:modalite_paiement,prelevement|nullable|string|max:11',
-            'authorization' => 'required_if:modalite_paiement,prelevement|boolean',
+            'iban' => 'nullable|required_if:modalite_paiement,prelevement|string|max:34',
+            'bic' => 'nullable|required_if:modalite_paiement,prelevement|string|max:11',
+            'authorization' => 'nullable|required_if:modalite_paiement,prelevement|boolean',
             'is_cgv_validated' => 'required|boolean',
         ]);
+
+        Log::info('Données validées avec succès:', $validatedData);
+
 
         // verif si la checkbox est coché
         if (!$request->has('is_cgv_validated') || !$request->is_cgv_validated) {
@@ -166,12 +173,12 @@ class OrderController extends Controller
         // met à jour les modalité de paiement dans `bc_commandes`
         $commande->update([
             'modalites_paiement' => $validatedData['modalite_paiement'],
-            'planification' => $validatedData['planification'], 
+            'planification' => $validatedData['planification'],
             'is_cgv_validated' => true,
             'validatedAt' => now(),
         ]);
 
-        // si "Prélèvement" a été sélectionné on ajoute les informations dans bc_mandats
+        // si prélèvement est sélectionné on ajoute les informations dans bc_mandats
         if ($validatedData['modalite_paiement'] === 'prelevement') {
             $referenceUnique = 'MANDAT-' . strtoupper(uniqid());
     
@@ -186,9 +193,17 @@ class OrderController extends Controller
             ]);
         }
 
-        return redirect()->route('orders.index')->with('success', 'Commande validée avec succès.');
+        return redirect()->route('orders.finishedCgv', ['commande' => $commande->id])->with('success', 'Commande validée avec succès.');
     }
 
+    public function finishedCgv(BcCommandes $commande)
+    {
+        if (!$commande) { // verif si la commande existe
+            return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
+        }
+
+        return view('mail.orderFinished', compact('commande'));
+    }
 
     public function processedOrder(Request $request, BcCommandes $commande)
     {

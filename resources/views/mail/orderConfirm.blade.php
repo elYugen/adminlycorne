@@ -1,7 +1,32 @@
 @extends('layouts.base')
 @section('title', 'Confirmation de la commande')
+@section('styles')
+    <style>
+        .logo {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-content: center;
+        }
+        .logo img {
+            width: 400px;
+        }
+        hr {
+            width: 100%;
+            border: none;
+            background-color: #b7b7c5;
+            height: 2px;
+            margin: 10px 0;
+        }
+    </style>
+@endsection
+
 @section('content')
 <div class="container">
+    <div class="logo">
+        <img src="{{ asset('sd_laucarre.png') }}" alt="Logo">
+        <hr />
+    </div>
         <!-- gestion de succès et erreur -->
         @if(session('success'))
         <div class="alert alert-success mt-3">
@@ -19,8 +44,7 @@
     @endif
         
     <br>
-    <h1>Condition général de vente</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. <br>Libero odit et voluptatum odio adipisci aperiam sapiente dolores id deserunt velit mollitia quisquam, <br>magni earum culpa ipsa? Iusto aperiam necessitatibus repudiandae.</p>
+    <h1>Confirmation de commande</h1>
     <br>
 
     <form action="{{ route('orders.confirm', $commande->id) }}" method="post">
@@ -56,7 +80,7 @@
             <input type="text" name="bic" id="bic" class="form-control" maxlength="11" placeholder="ABCDEFGHIJK" />
         </div>
         <div class="form-check">
-            <input type="checkbox" name="authorization" id="authorization" class="form-check-input" value="1" required>
+            <input type="checkbox" name="authorization" id="authorization" class="form-check-input" value="1">
             <label for="authorization" class="form-check-label">J'autorise L au carré à prélever les paiements de mes factures sur le compte bancaire ci-dessus</label>
         </div>
     </div>
@@ -66,12 +90,12 @@
         <label for="is_cgv_validated" class="form-check-label">Accepter les CGV</label>
     </div>
     
-    <button type="submit" class="btn btn-primary">Confirmer la commande</button>
+    <button type="submit" class="btn mt-1" style="background-color: #362258; color: white;">Confirmer la commande</button>
 </form>
 
-    <!-- Informations légales de l'entreprise -->
-    <div class="mt-5">
-        <h2>Informations légales</h2>
+<div class="mt-5">
+    <hr>
+        <h3>Informations légales</h3>
         <p>
             <strong>L AU CARRE</strong> - SAS au capital de 2 506 € <br>
             Granoux, 15 700 PLEAUX <br>
@@ -82,15 +106,19 @@
 </div>
 
 <script>
-    document.getElementById('modalite_paiement').addEventListener('change', function() {
-        const value = this.value;
-        const ibanBicContainer = document.getElementById('iban-bic-container');
+document.getElementById('modalite_paiement').addEventListener('change', function() {
+    const value = this.value;
+    const ibanBicContainer = document.getElementById('iban-bic-container');
+    const authorizationCheckbox = document.getElementById('authorization');
 
-        if (value === 'prelevement') {
-            ibanBicContainer.style.display = 'block';
-        } else {
-            ibanBicContainer.style.display = 'none';
-        }
-    });
+    if (value === 'prelevement') {
+        ibanBicContainer.style.display = 'block';
+        authorizationCheckbox.setAttribute('required', 'required');
+    } else {
+        ibanBicContainer.style.display = 'none';
+        authorizationCheckbox.removeAttribute('required');
+    }
+});
+    
 </script>
 @endsection

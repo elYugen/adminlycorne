@@ -38,7 +38,7 @@
 
         .companyInfo {
             margin-bottom: 20px;
-            overflow: hidden; /* Pour contenir les éléments flottants */
+            overflow: hidden;
         }
 
         .companyInfo img {
@@ -109,7 +109,7 @@
         }
 
         .orderPayment div {
-            overflow: hidden; /* Pour contenir les éléments flottants */
+            overflow: hidden; 
             margin-bottom: 5px;
         }
 

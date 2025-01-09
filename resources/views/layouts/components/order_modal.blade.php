@@ -20,7 +20,7 @@
                                 <option value="{{ $client->id }}">{{ $client->firstname }} {{ $client->lastname }}</option>
                             @endforeach
                         </select>
-                        <button type="button" class="btn btn-primary" style="margin-top:10px" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                        <button type="button" class="btn mt-1" style="background-color: #362258; color: white;" data-bs-toggle="modal" data-bs-target="#addClientModal">
                             Ajouter un client
                         </button>
                     </div>
@@ -83,8 +83,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="submit" form="commandeForm" class="btn btn-primary">Sauvegarder</button>
+                <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #b7b7c5; color: white;">Fermer</button>
+                <button type="submit" form="commandeForm" class="btn" style="background-color: #362258; color: white;">Sauvegarder</button>
             </div>
         </div>
     </div>
