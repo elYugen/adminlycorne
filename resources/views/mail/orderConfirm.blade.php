@@ -41,15 +41,14 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+        @endif
         
     <br>
-    <h1>Confirmation de commande</h1>
+    <h1>Confirmation de commande {{ $commande->numero_commande }}</h1>
     <br>
 
     <form action="{{ route('orders.confirm', $commande->id) }}" method="post">
     @csrf
-    <div class="mb-3">
         <label for="modalite_paiement" class="form-label">Modalité de paiement</label>
         <select name="modalite_paiement" id="modalite_paiement" class="form-select" required>
             <option value="">Sélectionnez un moyen de paiement</option>
@@ -57,8 +56,13 @@
             <option value="virement">Carte Bancaire</option>
             <option value="cheque">Chèque</option>
         </select>
-    </div>
 
+    <div id="stripe-container" style="display: none;" class="mt-1 mb-1">
+        <button type="button" id="stripe-button" class="btn mt-1" style="background-color: #362258; color: white;">
+            Payer avec Stripe
+        </button>
+    </div>
+<br>
     <div class="mb-3">
         <label for="planification" class="form-label">Planification de paiement</label>
         <select name="planification" id="planification" class="form-select" required>
@@ -110,15 +114,50 @@ document.getElementById('modalite_paiement').addEventListener('change', function
     const value = this.value;
     const ibanBicContainer = document.getElementById('iban-bic-container');
     const authorizationCheckbox = document.getElementById('authorization');
+    const stripeContainer = document.getElementById('stripe-container');
 
     if (value === 'prelevement') {
         ibanBicContainer.style.display = 'block';
+        stripeContainer.style.display = 'none';
         authorizationCheckbox.setAttribute('required', 'required');
+    } else if (value === 'virement') { // Carte bancaire
+        ibanBicContainer.style.display = 'none';
+        stripeContainer.style.display = 'block';
+        authorizationCheckbox.removeAttribute('required');
     } else {
         ibanBicContainer.style.display = 'none';
+        stripeContainer.style.display = 'none';
         authorizationCheckbox.removeAttribute('required');
     }
 });
-    
+
+document.getElementById('stripe-button').addEventListener('click', function () {
+    fetch("{{ route('stripe.checkout.session') }}", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({
+            commande_id: {{ $commande->id }},
+            amount: {{ $commande->total_ttc * 100 }}, 
+        }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Erreur Stripe: " + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        const stripe = Stripe("{{ env('STRIPE_KEY') }}");
+        stripe.redirectToCheckout({ sessionId: data.id });
+    })
+    .catch(error => console.error('Erreur Stripe:', error));
+});
 </script>
+@endsection
+
+@section('script')
+<script src="https://js.stripe.com/v3/"></script>
 @endsection

@@ -28,6 +28,10 @@ class Prospect extends Model
         'address',
         'postal_code',
         'company',
-        'siret'
+        'siret',
+        'stripe_id',
+        'card_brand',
+        'card_last_four',
+        'trials_ends_at',
     ];
 }

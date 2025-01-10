@@ -148,9 +148,6 @@ class OrderController extends Controller
         if (!$commande) { // verif si la commande existe
             return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
         }
-    
-        Log::info('Données reçues pour la commande:', $request->all());
-
 
         // validation des données du formulaire
         $validatedData = $request->validate([
@@ -161,9 +158,6 @@ class OrderController extends Controller
             'authorization' => 'nullable|required_if:modalite_paiement,prelevement|boolean',
             'is_cgv_validated' => 'required|boolean',
         ]);
-
-        Log::info('Données validées avec succès:', $validatedData);
-
 
         // verif si la checkbox est coché
         if (!$request->has('is_cgv_validated') || !$request->is_cgv_validated) {
@@ -196,10 +190,16 @@ class OrderController extends Controller
         return redirect()->route('orders.finishedCgv', ['commande' => $commande->id])->with('success', 'Commande validée avec succès.');
     }
 
-    public function finishedCgv(BcCommandes $commande)
+    public function finishedCgv(Request $request, BcCommandes $commande)
     {
         if (!$commande) { // verif si la commande existe
             return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
+        }
+
+        // verifie si l'url à le mot clé "success"
+        if ($request->has('success') && $request->success === 'true') {
+            // retourner un message de succès
+            session()->flash('success', 'Commande validée avec succès.');
         }
 
         return view('mail.orderFinished', compact('commande'));

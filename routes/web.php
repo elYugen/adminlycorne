@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProspectController;
+use App\Http\Controllers\StripeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,8 @@ Route::get('/orders/{commande}/confirm', [OrderController::class, 'showCgv'])->n
 Route::post('/orders/{commande}/confirm', [OrderController::class, 'validateCgv'])->name('orders.confirm');
 Route::get('/orders/{commande}/finished', [OrderController::class, 'finishedCgv'])->name('orders.finishedCgv');
 
+// Route lié à stripe
+Route::post('/stripe/checkout-session', [StripeController::class, 'createCheckoutSession'])->name('stripe.checkout.session');
 
 // Route protégées
 Route::middleware('auth')->group(function () {
