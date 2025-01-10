@@ -12,19 +12,29 @@ class StripeController extends Controller
     public function createCheckoutSession(Request $request)
     {
         try {
-            // valide les données du formulaire
+            // Validation des données
             $validated = $request->validate([
                 'commande_id' => 'required|exists:bc_commandes,id',
                 'amount' => 'required|integer|min:1',
+                'planification' => 'required|string|in:annuel,trimestriel,semestriel,mensuel',
+                'is_cgv_validated' => 'required|boolean'
             ]);
 
-            // récupère les infos de la commande
+            // Récupération de la commande
             $commande = BcCommandes::findOrFail($validated['commande_id']);
+            
+            // Mise à jour de la commande avec les informations de planification et CGV
+            $commande->update([
+                'modalites_paiement' => 'virement', // carte bancaire
+                'planification' => $validated['planification'],
+                'is_cgv_validated' => true,
+                'validatedAt' => now(),
+            ]);
 
-            // initialise les config de stripe
+            // Initialisation de Stripe
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            // création de la session stripe
+            // Création de la session Stripe
             $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
@@ -33,7 +43,7 @@ class StripeController extends Controller
                         'product_data' => [
                             'name' => 'Commande ' . $commande->numero_commande,
                         ],
-                        'unit_amount' => $validated['amount'], // montant en centimes
+                        'unit_amount' => $validated['amount'],
                     ],
                     'quantity' => 1,
                 ]],
@@ -42,7 +52,6 @@ class StripeController extends Controller
                 'cancel_url' => route('orders.confirm', ['commande' => $request->commande_id]),
             ]);
 
-            // envoie une réponse json
             return response()->json(['id' => $session->id]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

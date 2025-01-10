@@ -11,7 +11,6 @@
                     @method('POST')
                     <input type="hidden" name="commande_id" id="commande_id">
 
-                    <!-- Client -->
                     <div class="mb-3">
                         <label for="client_id" class="form-label">Client</label>
                         <select name="client_id" id="client_id" class="form-select" required>
@@ -25,27 +24,11 @@
                         </button>
                     </div>
 
-                    <!-- Conseiller -->
                     <div class="mb-3">
                         <!--<label for="conseiller_id" class="form-label">Conseiller</label>-->
                         <input type="hidden" name="conseiller_id" value="{{ auth()->user()->id }}">
                     </div>
 
-                    <!-- Modalité de paiement 
-                    <div class="mb-3">
-                        <label for="modalite_paiement" class="form-label">Modalité de paiement</label>
-                        <select name="modalite_paiement" id="modalite_paiement" class="form-select" required>
-                            <option value="">Sélectionnez une modalité</option>
-                            <option value="prelevement">Prélèvement</option>
-                            <option value="virement">Virement</option>
-                            <option value="cheque">Chèque</option>
-                        </select>
-                    </div>-->
-
-                    <!-- Date de commande -->
-
-
-                    <!-- Produits -->
                     <div id="produitsList">
                         <h6>Produits</h6>
                         <div class="row mb-2 produit-row">
@@ -74,7 +57,7 @@
                     </div>
                     <button type="button" class="btn btn-sm btn-secondary mt-2" id="addProductRow">Ajouter un produit</button>
 
-                    <!-- Totaux -->
+
                     <div class="mt-3">
                         <strong>Total HT:</strong> <span id="totalHT">0.00</span> €
                         <br>
