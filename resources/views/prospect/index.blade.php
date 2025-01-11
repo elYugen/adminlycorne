@@ -5,7 +5,7 @@
     @include('layouts.components.navbar')
 
     <div class="container">
-        <h1 class="mt-4">Gestion des entreprises</h1>
+        <h1 class="mt-4">Gestion des prospects</h1>
 
         @if(session('success'))
         <div class="alert alert-success mt-3">
@@ -15,7 +15,7 @@
 
     <div class="mt-4 mb-4">
         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #b7b7c5; color: white;">
-            <i class="bi bi-person-plus"></i> Ajouter une entreprise
+            <i class="bi bi-person-plus"></i> Ajouter un prospect
         </button>
     </div>
 

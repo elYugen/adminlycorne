@@ -93,7 +93,7 @@
                   <input type="text" name="postal_code" value="{{ old('postal_code', $user->postal_code) }}" class="form-control">
                   <br>
                   
-                  <label>Entreprise :</label>
+                  <label>Nom de l'Entreprise :</label>
                   <input type="text" name="entreprise" value="{{ old('entreprise', $user->entreprise) }}" class="form-control">
                   <br>
                   

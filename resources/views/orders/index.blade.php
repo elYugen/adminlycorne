@@ -5,7 +5,7 @@
 @include('layouts.components.navbar')
 
 <div class="container">
-    <h1 class="mt-4">Gestion des commandes</h1>
+    <h1 class="mt-4">Gestion des bons de commandes</h1>
 
     <!-- gestion de succès et erreur -->
     @if(session('success'))
@@ -25,7 +25,7 @@
 
     <div class="mt-4 mb-4">
         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#commandeModal" style="background-color: #b7b7c5; color: white;">
-            <i class="bi bi-person-plus"></i> Créer une commande
+            <i class="bi bi-person-plus"></i> Créer un bon de commande
         </button>
     </div>
 

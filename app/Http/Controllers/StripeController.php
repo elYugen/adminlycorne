@@ -9,21 +9,24 @@ use Stripe\Checkout\Session;
 
 class StripeController extends Controller
 {
+    private const MIN_AMOUNT = 100; // montant minimum
+    private const MAX_AMOUNT = 1000000; // montant max
+
     public function createCheckoutSession(Request $request)
     {
         try {
-            // Validation des données
+            // validation des données
             $validated = $request->validate([
                 'commande_id' => 'required|exists:bc_commandes,id',
-                'amount' => 'required|integer|min:1',
+                'amount' => 'required|integer|min:' . self::MIN_AMOUNT . '|max:' . self::MAX_AMOUNT,
                 'planification' => 'required|string|in:annuel,trimestriel,semestriel,mensuel',
                 'is_cgv_validated' => 'required|boolean'
             ]);
 
-            // Récupération de la commande
+            // récupération de la commande
             $commande = BcCommandes::findOrFail($validated['commande_id']);
             
-            // Mise à jour de la commande avec les informations de planification et CGV
+            // maj de la commande avec les informations de planification et cgv validé
             $commande->update([
                 'modalites_paiement' => 'virement', // carte bancaire
                 'planification' => $validated['planification'],
@@ -31,10 +34,10 @@ class StripeController extends Controller
                 'validatedAt' => now(),
             ]);
 
-            // Initialisation de Stripe
+            // initialisation de stripe
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            // Création de la session Stripe
+            // création de la session Stripe
             $session = Session::create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[

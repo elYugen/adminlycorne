@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'index'])->name('auth.index');
 Route::post('/auth/login', [AuthController::class, 'authenticate'])->name('auth.authenticate');
 
-Route::get('/orders/{commande}/confirm', [OrderController::class, 'showCgv'])->name('orders.showCgv');
-Route::post('/orders/{commande}/confirm', [OrderController::class, 'validateCgv'])->name('orders.confirm');
+Route::get('/orders/{commande}/confirm', [OrderController::class, 'showCgv'])->name('orders.showCgv')->middleware('throttle:3,1');
+Route::post('/orders/{commande}/confirm', [OrderController::class, 'validateCgv'])->name('orders.confirm')->middleware('throttle:3,1');
 Route::get('/orders/{commande}/finished', [OrderController::class, 'finishedCgv'])->name('orders.finishedCgv');
 
 // Route lié à stripe
