@@ -12,7 +12,7 @@ class AuthController extends Controller
     {
         if (Auth::check())
         {
-           return redirect('/dashboard');
+           return redirect('/orders');
         }
 
         return view('auth.index');
@@ -29,7 +29,7 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/orders');
         }
 
         return back()->withErrors([ 

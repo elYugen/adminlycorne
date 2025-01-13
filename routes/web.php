@@ -25,9 +25,6 @@ Route::middleware('auth')->group(function () {
     // Route lié à l'authentification
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
     
-    // Route lié aux Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    
     // Route lié aux Prospects
     Route::prefix('prospect')->group(function () {
         Route::get('/', [ProspectController::class, 'index'])->name('prospect.index');

@@ -20,8 +20,18 @@ class BcCommandes extends Model
         'is_cgv_validated',
         'validatedAt',
         'isProcessed',
-        'planification'
+        'planification',
+        'payment_token',
+        'payment_link_expires_at',
     ];
+
+    public function isPaid()
+    {
+        // vérifier si la commande est payée
+        return $this->isProcessed && $this->validatedAt !== null;
+
+    }
+
 
     public function client()
     {

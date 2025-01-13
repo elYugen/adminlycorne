@@ -4,33 +4,27 @@ namespace App\Mail;
 
 use App\Models\BcCommandes;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
 class OrderStatus extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
     protected BcCommandes $order;
     protected string $pdfPath;
+    protected string $paymentToken;
 
-    public function __construct(BcCommandes $order, string $pdfPath)
+    public function __construct(BcCommandes $order, string $pdfPath, string $paymentToken)
     {
         $this->order = $order;
         $this->pdfPath = $pdfPath;
+        $this->paymentToken = $paymentToken;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -38,12 +32,8 @@ class OrderStatus extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
-        // liste des produits acheté par le client
         $produits = $this->order->produits->map(function ($produit) {
             return [
                 'nom' => $produit->nom,
@@ -53,31 +43,31 @@ class OrderStatus extends Mailable
             ];
         });
 
+        // Création de l'URL sécurisée pour le paiement
+        $paymentUrl = route('orders.showCgv', [
+            'commande' => $this->order->id,
+            'token' => $this->paymentToken
+        ]);
+
         return new Content(
             view: 'mail.orderStatus',
-            with: [ // permet de choisir quel donnée envoyé plus précisément plutot que de tout envoyer en en public dans le construct
-                'numero_commande' => $this->order->numero_commande, // récupère dans la variable order le numero de commande  
-                'date_commande'  => $this->order->date_commande,        
-                'firstname' => $this->order->client->firstname, // récupère le prénom du client
-                'lastname' => $this->order->client->lastname, // récupère le nom du client
+            with: [
+                'numero_commande' => $this->order->numero_commande,
+                'date_commande'  => $this->order->date_commande,
+                'firstname' => $this->order->client->firstname,
+                'lastname' => $this->order->client->lastname,
                 'produits' => $produits,
                 'total_ttc' => $this->order->total_ttc,
                 'total_ht' => $this->order->total_ht,
                 'modalite_paiement' => $this->order->modalites_paiement,
-                'validate_cgv_url' => route('orders.showCgv', $this->order->id), 
-        
+                'payment_url' => $paymentUrl,
+                'expires_at' => $this->order->payment_link_expires_at->format('d/m/Y H:i'),
             ],
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
-
         return [
             Attachment::fromPath($this->pdfPath)
                 ->as($this->order->numero_commande . '.pdf'),

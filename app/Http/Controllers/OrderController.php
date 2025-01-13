@@ -12,9 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 use Webklex\PDFMerger\Facades\PDFMergerFacade;
+
+use function Ramsey\Uuid\v1;
 
 class OrderController extends Controller
 {
@@ -54,6 +57,10 @@ class OrderController extends Controller
         }
         $totalTTC = $totalHT * 1.2; // TVA à 20%
     
+        // génère un token unique et une date d'expiration
+        $paymentToken = Str::random(64);
+        $expiresAt = now()->addDays(7); // Le lien expire dans 7 jours
+
         $commande = BcCommandes::create([
             'numero_commande' => 'CMD-' . strtoupper(uniqid()), // génère un num de commande unique
             'client_id' => $request->client_id,
@@ -62,6 +69,8 @@ class OrderController extends Controller
             'modalites_paiement' => null,
             'total_ht' => $totalHT,
             'total_ttc' => $totalTTC,
+            'payment_token' => $paymentToken,
+            'payment_link_expires_at' => $expiresAt,
         ]);
     
         foreach ($request->produits as $produit) {
@@ -129,19 +138,35 @@ class OrderController extends Controller
 
         // envoyer le mail à la création de la commande
         $emailClient = $commande->client->email; 
-        Mail::to($emailClient)->send(new OrderStatus($commande, $finalPdfPath));
+        Mail::to($emailClient)->send(new OrderStatus($commande, $finalPdfPath, $paymentToken));
 
         return redirect()->route('orders.index')->with('success', 'Commande créée avec succès.');
     }
 
-    public function showCgv(BcCommandes $commande)
+    public function showCgv(BcCommandes $commande, Request $request)
     {
         if (!$commande) { // verif si la commande existe
             return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
         }
 
-        return view('mail.orderConfirm', compact('commande'));
-    }
+        // récupération du token de l'URL
+        $urlToken = $request->query('token');
+
+        // verifie que le token est présent dans l'url et correspond à celui de la commande
+        if (!$urlToken || $urlToken !== $commande->payment_token) {
+            return redirect()->route('orders.index')->with('error', 'Lien de paiement invalide.');
+        }
+
+        // vérifier la date d'expiration du lien
+        if ($commande->payment_link_expires_at && $commande->payment_link_expires_at < now()) {
+            return redirect()->route('orders.index')->with('error', 'Le lien de paiement a expiré.');
+        }
+
+        // envoyer le token de la base de données à la vue
+        $token = $commande->payment_token;
+
+        return view('mail.orderConfirm', compact('commande', 'token'));
+        }
 
     public function validateCgv(Request $request, BcCommandes $commande)
     {
@@ -152,7 +177,7 @@ class OrderController extends Controller
         // validation des données du formulaire
         $validatedData = $request->validate([
             'modalite_paiement' => 'required|string|in:prelevement,virement,cheque',
-            'planification' => 'required|string|in:annuel,trimestriel,semestriel,mensuel',
+            'planification' => 'nullable|string|in:annuel,trimestriel,semestriel,mensuel',
             'iban' => 'nullable|required_if:modalite_paiement,prelevement|string|max:34',
             'bic' => 'nullable|required_if:modalite_paiement,prelevement|string|max:11',
             'authorization' => 'nullable|required_if:modalite_paiement,prelevement|boolean',
@@ -164,10 +189,15 @@ class OrderController extends Controller
             return redirect()->back()->with('error', 'Vous devez accepter les CGV pour continuer.');
         }
 
+        // retire planification si la modalite de paiement n'est pas prelevement
+        if ($validatedData['modalite_paiement'] !== 'prelevement') {
+            $validatedData['planification'] = null;
+        }
+
         // met à jour les modalité de paiement dans `bc_commandes`
         $commande->update([
             'modalites_paiement' => $validatedData['modalite_paiement'],
-            'planification' => $validatedData['planification'],
+            'planification' => $validatedData['planification'] ?? null, 
             'is_cgv_validated' => true,
             'validatedAt' => now(),
         ]);
@@ -196,9 +226,14 @@ class OrderController extends Controller
             return redirect()->route('orders.index')->with('error', 'Commande introuvable.');
         }
 
+        Log::info('Paramètres reçus:', [
+            'success' => $request->success,
+            'has_success' => $request->has('success'),
+            'all_parameters' => $request->all()
+        ]);
+
         // verifie si l'url à le mot clé "success"
-        if ($request->has('success') && $request->success === 'true') {
-            // retourner un message de succès
+        if ($request->has('success') && ($request->success == 'true' || $request->success === true)) {
             session()->flash('success', 'Commande validée avec succès.');
         }
 

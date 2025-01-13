@@ -48,7 +48,7 @@
     <h1>Confirmation de commande {{ e($commande->numero_commande) }}</h1>
     <br>
 
-    <form action="{{ route('orders.confirm', $commande->id) }}" method="post">
+    <form action="{{ route('orders.confirm', $commande->id) }}" method="post" data-token="{{ $token }}">
     @csrf
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -57,16 +57,6 @@
         <ul id="errorList"></ul>
     </div>
 
-    <label for="planification" class="form-label">Planification de paiement</label>
-    <select name="planification" id="planification" class="form-select" required data-original="{{ old('planification') }}"">
-        <option value="">Sélectionnez une planification</option>
-        <option value="annuel">Annuel</option>
-        <option value="trimestriel">Trimestriel</option>
-        <option value="semestriel">Semestriel</option>
-        <option value="mensuel">Mensuel</option>
-    </select>
-
-<br>
     <div class="mb-3">
         <label for="modalite_paiement" class="form-label">Modalité de paiement</label>
         <select name="modalite_paiement" id="modalite_paiement" class="form-select" required data-original="{{ old('modalite_paiement') }}">
@@ -74,6 +64,17 @@
             <option value="prelevement">Prélèvement</option>
             <option value="virement">Carte Bancaire</option>
             <option value="cheque">Chèque</option>
+        </select>
+    </div>
+
+    <div id="planification-container" style="display: none;" class="mb-3">
+        <label for="planification" class="form-label">Planification de paiement</label>
+        <select name="planification" id="planification" class="form-select" data-original="{{ old('planification') }}">
+            <option value="">Sélectionnez une planification</option>
+            <option value="annuel">Annuel</option>
+            <option value="trimestriel">Trimestriel</option>
+            <option value="semestriel">Semestriel</option>
+            <option value="mensuel">Mensuel</option>
         </select>
     </div>
 
@@ -94,7 +95,7 @@
 
     <div class="form-check mt-4">
         <input type="checkbox" name="is_cgv_validated" id="is_cgv_validated" class="form-check-input" value="1" required>
-        <label for="is_cgv_validated" class="form-check-label">J'ai lu et j'accepte les conditions générales de ventes</label>
+        <label for="is_cgv_validated" class="form-check-label">J'ai lu et j'accepte les <a href="{{ e(asset('CGV.pdf')) }}" target="_blank" rel="noopener noreferrer">conditions générales de ventes</a></label>
     </div>
     
     <!-- bouton de confirmation apparait pour chèque et prélèvement -->
@@ -123,6 +124,8 @@
 </div>
 
 <script>
+const urlParams = new URLSearchParams(window.location.search);
+const paymentToken = urlParams.get('token');
 const VALID_PAYMENT_METHODS = ['prelevement', 'virement', 'cheque'];
 const VALID_PLANIFICATIONS = ['annuel', 'trimestriel', 'semestriel', 'mensuel'];
 //const IBAN_REGEX = ^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$;
@@ -154,6 +157,8 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         return;
     }
 
+    const planificationContainer = document.getElementById('planification-container');
+    const planificationSelect = document.getElementById('planification');
     const ibanBicContainer = document.getElementById('iban-bic-container');
     const authorizationCheckbox = document.getElementById('authorization');
     const stripeContainer = document.getElementById('stripe-container');
@@ -170,6 +175,10 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         const bicInput = document.getElementById('bic');
         if (ibanInput) ibanInput.value = '';
         if (bicInput) bicInput.value = '';
+        planificationSelect.value = '';
+        planificationContainer.style.display = 'none';
+    } else {
+        planificationContainer.style.display = 'block';
     }
 
     switch(value) {
@@ -217,14 +226,17 @@ document.getElementById('stripe-button').addEventListener('click', function(e) {
     errorList.innerHTML = '';
     errorContainer.style.display = 'none';
     
-    // validation des champs
-    const planification = sanitizeInput(document.getElementById('planification').value);
+    const selectedPaymentMethod = document.getElementById('modalite_paiement').value;
     const cgvChecked = document.getElementById('is_cgv_validated').checked;
     
     let errors = [];
+    let planificationValue = null;
     
-    if (!planification || !VALID_PLANIFICATIONS.includes(planification)) {
-        errors.push("veuillez sélectionner une planification de paiement valide");
+    if (selectedPaymentMethod === 'prelevement') {
+        planificationValue = sanitizeInput(document.getElementById('planification').value);
+        if (!planificationValue || !VALID_PLANIFICATIONS.includes(planificationValue)) {
+            errors.push("veuillez sélectionner une planification de paiement valide");
+        }
     }
     
     if (!cgvChecked) {
@@ -261,13 +273,16 @@ document.getElementById('stripe-button').addEventListener('click', function(e) {
             body: JSON.stringify({
                 commande_id: {{ $commande->id }},
                 amount: {{ $commande->total_ttc * 100 }},
-                planification: planification,
-                is_cgv_validated: true
+                planification: planificationValue,
+                is_cgv_validated: true,
+                token: urlParams.get('token')
             }),
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`erreur stripe: ${response.status}`);
+                return response.json().then(err => {
+                    throw new Error(err.error || `erreur stripe: ${response.status}`);
+                });
             }
             return response.json();
         })
@@ -287,7 +302,7 @@ document.getElementById('stripe-button').addEventListener('click', function(e) {
             } else {
                 errorContainer.style.display = 'block';
                 const li = document.createElement('li');
-                li.textContent = "une erreur est survenue lors de la création de la session de paiement.";
+                li.textContent = "Une erreur est survenue lors de la création de la session de paiement.";
                 errorList.appendChild(li);
                 errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -298,15 +313,18 @@ document.getElementById('stripe-button').addEventListener('click', function(e) {
 });
 
 // protection contre la double soumission
-document.getElementById('confirmation-form').addEventListener('submit', function(e) {
-    const submitButton = this.querySelector('button[type="submit"]');
-    if (submitButton) {
-        submitButton.disabled = true;
-        setTimeout(() => {
-            submitButton.disabled = false;
-        }, 5000);
-    }
-});
+const confirmationForm = document.getElementById('confirmation-form');
+if (confirmationForm) {
+    confirmationForm.addEventListener('submit', function(e) {
+        const submitButton = this.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            setTimeout(() => {
+                submitButton.disabled = false;
+            }, 5000);
+        }
+    });
+}
 </script>
 @endsection
 
