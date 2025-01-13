@@ -21,22 +21,18 @@ use function Ramsey\Uuid\v1;
 
 class OrderController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $commandes = BcCommandes::with(['client', 'conseiller']) // chargement anticipé des relations
-            ->when($request->client_id, function ($query, $client_id) { // active la fonction quand client_id est requêter
-                $query->where('client_id', $client_id); // ajoute le filtrage si applicable
-            })
-            ->when(Auth::user()->role === 'revendeur', function ($query) { // applique le filtre si l'utilisateur a le role revendeur, l'admin peut tout voir
-                $query->where('conseiller_id', Auth::user()->id); // montre que les commandes du conseiller connecté
-            })
-            ->where('isProcessed', 0) // retire les commandes avec isProcessed a 1
-            ->paginate(10);
-    
+        $commandesQuery = BcCommandes::with(['client', 'produits', 'conseiller'])
+            ->when(Auth::user()->role === 'revendeur', function ($query) {
+                $query->where('conseiller_id', Auth::user()->id);
+            });
+                
+        $commandes = $commandesQuery->get(); // charge toutes les commandes pour datatables
         $clients = Prospect::all();
         $produits = Produits::all();
         $conseillers = BcUtilisateur::select('id', 'name')->get();
-
+    
         return view('orders.index', compact('commandes', 'clients', 'produits', 'conseillers'));
     }
 

@@ -23,6 +23,7 @@ class BcCommandes extends Model
         'planification',
         'payment_token',
         'payment_link_expires_at',
+        'installments_count'
     ];
 
     public function isPaid()

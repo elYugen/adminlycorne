@@ -3,7 +3,7 @@
         <img src="{{ asset('sd_laucarre.png') }}" alt="Logo" style="width: 200px; margin-bottom: 20px;">
         <hr style="width: 100%; border: none; background-color: #b7b7c5; height: 2px; margin: 20px 0;">
         
-        <h2 style="color: #333; margin-bottom: 15px;">Confirmation de votre commande</h2>
+        <h2 style="color: #333; margin-bottom: 15px;">Confirmation de commande</h2>
         
         <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-top: 20px; text-align: left;">
             <p>Bonjour {{ $firstname }},</p>

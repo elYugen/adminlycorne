@@ -9,7 +9,7 @@ class ProspectController extends Controller
 {
     public function index()
     {
-        $users = Prospect::paginate(10);
+        $users = Prospect::all();
 
         return view('prospect.index', compact('users'));
     }
@@ -17,18 +17,25 @@ class ProspectController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
+            'firstname' => 'nullable|string|max:255',
+            'lastname' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             'phone_number' => 'required|string|regex:/^\+?[0-9\s\-]+$/',
-            'company' => 'required|string|max:255',
-            'siret' => 'required|string|regex:/^\+?[0-9\s\-]+$/',
-            'gender' => 'required|string|max:10',
+            'company' => 'nullable|string|max:255',
+            'siret' => 'nullable|string|regex:/^\+?[0-9\s\-]+$/',
+            'gender' => 'nullable|string|max:10',
             'address' => 'required|string|max:255',
             'postal_code' => 'required|string:15',
             'city' => 'required|string|max:50',
         ]);
-
+    
+        // s'assurer qu'au moins le nom ou l'entreprise est renseigné
+        if (empty($request->lastname) && empty($request->company)) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Le nom ou l\'entreprise doit être renseigné']);
+        }
+    
         Prospect::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
@@ -41,7 +48,7 @@ class ProspectController extends Controller
             'siret' => $request->siret,
             'city' => $request->city
         ]);
-
+    
         return redirect()->route('prospect.index')->with('success', 'Utilisateur crée avec succès');
     }
 

@@ -1,6 +1,8 @@
 @extends('layouts.base')
-@section('title', 'Gestion des entreprises')
-    
+@section('title', 'Gestion des prospects')
+@section('styles')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endsection
 @section('content')
     @include('layouts.components.navbar')
 
@@ -12,6 +14,15 @@
             {{ session('success') }}
         </div>
         @endif
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
     <div class="mt-4 mb-4">
         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #b7b7c5; color: white;">
@@ -20,8 +31,8 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
+        <table class="table table-striped table-hover prospect-table">
+            <thead class="table">
                 <tr>
                     <th>#</th>
                     <th>Nom Prénom</th>
@@ -37,19 +48,21 @@
                 @foreach ($users as $user)
                 <tr>
                     <td>{{ $user->id }}</td>
-                    <td>{{ $user->gender === 'homme' ? 'Mr' : 'Mme' }}. {{ $user->firstname }} {{ $user->lastname }} </td>
+                    <td>{{ $user->firstname }} {{ $user->lastname }} </td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->address }}, {{ $user->postal_code }}</td>
+                    <td>{{ $user->address }}, {{ $user->city }} {{ $user->postal_code }}</td>
                     <td>{{ $user->phone_number }}</td>
                     <td>{{ $user->company }}</td>
                     <td>{{ $user->siret }}</td>
                     <td>
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}">
-                            <i class="bi bi-pencil"></i> Modifier
-                        </button>
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser{{ $user->id }}">
-                            <i class="bi bi-trash"></i> Supprimer
-                        </button>
+                        <div class="d-flex gap-1 h-100 align-items-center">
+                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser{{ $user->id }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -57,10 +70,28 @@
         </table>
     </div>
 </div>
-<div class="d-flex justify-content-center">
-    {{ $users->links() }}
-</div>
     </div>
+@endsection
+
+@section('script')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.prospect-table').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+            },
+            responsive: true,
+            autoWidth: false,
+            columnDefs: [
+                { orderable: false, targets: [7] } 
+            ],
+            pageLength: 10,
+        });
+    });
+</script>
 @endsection
 
 @include('layouts.components.prospect_modal')

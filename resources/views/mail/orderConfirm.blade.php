@@ -93,6 +93,17 @@
         </div>
     </div>
 
+    <div id="installments-container" style="display: none;" class="mb-3">
+        <label for="installments" class="form-label">Paiement en plusieurs fois</label>
+        <select name="installments" id="installments" class="form-select">
+            <option value="">Paiement en une fois</option>
+            <option value="3">Paiement en 3 fois</option>
+            <option value="4">Paiement en 4 fois</option>
+            <option value="6">Paiement en 6 fois</option>
+            <option value="12">Paiement en 12 fois</option>
+        </select>
+    </div>
+    
     <div class="form-check mt-4">
         <input type="checkbox" name="is_cgv_validated" id="is_cgv_validated" class="form-check-input" value="1" required>
         <label for="is_cgv_validated" class="form-check-label">J'ai lu et j'accepte les <a href="{{ e(asset('CGV.pdf')) }}" target="_blank" rel="noopener noreferrer">conditions générales de ventes</a></label>
@@ -157,6 +168,7 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         return;
     }
 
+    const installmentsContainer = document.getElementById('installments-container');
     const planificationContainer = document.getElementById('planification-container');
     const planificationSelect = document.getElementById('planification');
     const ibanBicContainer = document.getElementById('iban-bic-container');
@@ -190,6 +202,7 @@ document.getElementById('modalite_paiement').addEventListener('change', function
             }
             break;
         case 'virement':
+            installmentsContainer.style.display = 'block';
             stripeContainer.style.display = 'block';
             if (authorizationCheckbox) {
                 authorizationCheckbox.removeAttribute('required');
@@ -221,6 +234,8 @@ if (document.getElementById('bic')) {
 document.getElementById('stripe-button').addEventListener('click', function(e) {
     e.preventDefault();
     
+    const installmentsValue = document.getElementById('installments').value;
+
     const errorContainer = document.getElementById('validationErrors');
     const errorList = document.getElementById('errorList');
     errorList.innerHTML = '';
@@ -275,7 +290,8 @@ document.getElementById('stripe-button').addEventListener('click', function(e) {
                 amount: {{ $commande->total_ttc * 100 }},
                 planification: planificationValue,
                 is_cgv_validated: true,
-                token: urlParams.get('token')
+                token: urlParams.get('token'),
+                installments: installmentsValue || null
             }),
         })
         .then(response => {

@@ -1,52 +1,49 @@
-<!-- modal de création d'un utilisateur -->
 <div class="modal fade" id="createUser" tabindex="-1" aria-labelledby="createUserLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="createUserLabel">Ajouter une nouvelle entreprise</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="{{ route('prospect.create')}}" method="post">
-            @csrf
-            <label>Prenom : </label>
-            <input type="text" name="firstname" class="form-control" required>
-            <br>
-            <label>Nom :</label>
-            <input type="text" name="lastname" class="form-control" required>
-            <br>
-            <label>Civilié :</label>
-            <select name="gender"class="form-control" required>
-                <option value="homme">Homme</option>
-                <option value="femme">Femme</option>
-            </select>
-            <label>Adresse mail : </label>
-            <input type="email" name="email" class="form-control" required>
-            <br>
-            <label>Numéro de Téléphone : </label>
-            <input type="text" name="phone_number" class="form-control" required>
-            <br>
-            <label>Adresse :</label>
-            <input type="text" name="address" class="form-control" required>
-            <br>
-            <label>Ville : </label>
-            <input type="text" name="city" class="form-control">
-            <br>
-            <label>Code postal :</label>
-            <input type="text" name="postal_code" class="form-control" required>
-            <br>
-            <label>Entreprise :</label>
-            <input type="text" name="company" class="form-control" required>
-            <br>
-            <label>Siret :</label>
-            <input type="text" name="siret" class="form-control" required>
-            <br>
-            <button type="submit" class="btn" style="background-color: #362258; color: white;">Valider</button>
-          </form>
-        </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createUserLabel">Ajouter un nouveau prospect</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ route('prospect.create')}}" method="post">
+          @csrf
+          <label>Prenom : </label>
+          <input type="text" name="firstname" class="form-control">
+          <br>
+          <label>Nom :</label>
+          <input type="text" name="lastname" class="form-control">
+          <br>
+          <label>Civilié :</label>
+          <input type="text" name="gender" class="form-control">
+          <br>
+          <label>Adresse mail : </label>
+          <input type="email" name="email" class="form-control" required>
+          <br>
+          <label>Numéro de Téléphone : </label>
+          <input type="text" name="phone_number" class="form-control" required>
+          <br>
+          <label>Adresse :</label>
+          <input type="text" name="address" class="form-control" required>
+          <br>
+          <label>Ville : </label>
+          <input type="text" name="city" class="form-control" required>
+          <br>
+          <label>Code postal :</label>
+          <input type="text" name="postal_code" class="form-control" required>
+          <br>
+          <label>Entreprise :</label>
+          <input type="text" name="company" class="form-control">
+          <br>
+          <label>Siret :</label>
+          <input type="text" name="siret" class="form-control">
+          <br>
+          <button type="submit" class="btn" style="background-color: #362258; color: white;">Valider</button>
+        </form>
       </div>
     </div>
   </div>
+</div>
 
   @foreach ($users as $user)
 <!-- modal d'édition d'un client -->
