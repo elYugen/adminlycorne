@@ -8,7 +8,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link text-white" href="{{ route('orders.index')}}">
-            Commandes
+            Gestion Bon de Commande
           </a>
         </li>
         <li class="nav-item">

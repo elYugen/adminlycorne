@@ -29,14 +29,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('prospect')->group(function () {
         Route::get('/', [ProspectController::class, 'index'])->name('prospect.index');
         Route::post('/create', [ProspectController::class, 'create'])->name('prospect.create');
-        Route::put('/edit/{bcuser}', [ProspectController::class, 'edit'])->name('prospect.edit');
-        Route::delete('/delete/{bcuser}', [ProspectController::class, 'delete'])->name('prospect.delete');
+        Route::post('/create/from/order', [ProspectController::class, 'store'])->name('prospect.store');
+        Route::put('/edit/{prospect}', [ProspectController::class, 'edit'])->name('prospect.edit');
+        Route::delete('/delete/{prospect}', [ProspectController::class, 'delete'])->name('prospect.delete');
+        Route::get('/search', [ProspectController::class, 'search'])->name('prospect.search');
     });
 
     // Route lié aux commandes
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
-        Route::post('/create', [OrderController::class, 'create'])->name('orders.create');
+        Route::get('/create', [OrderController::class, 'create'])->name('orders.create');
+
+        Route::post('/add', [OrderController::class, 'add'])->name('orders.add');
         Route::put('/processed/{commande}', [OrderController::class, 'processedOrder'])->name('orders.processed');
     });
 

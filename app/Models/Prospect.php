@@ -29,9 +29,5 @@ class Prospect extends Model
         'postal_code',
         'company',
         'siret',
-        'stripe_id',
-        'card_brand',
-        'card_last_four',
-        'trials_ends_at',
     ];
 }

@@ -36,7 +36,16 @@ class OrderController extends Controller
         return view('orders.index', compact('commandes', 'clients', 'produits', 'conseillers'));
     }
 
-    public function create(Request $request)
+    public function create()
+    {
+        $clients = Prospect::all();
+        $produits = Produits::all();
+        $conseillers = BcUtilisateur::select('id', 'name')->get();
+
+        return view('orders.create', compact('clients', 'produits', 'conseillers'));
+    }
+
+    public function add(Request $request)
     {
         $request->validate([
             'client_id' => 'required|exists:bc_prospects,id',

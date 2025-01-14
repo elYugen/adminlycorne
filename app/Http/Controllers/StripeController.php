@@ -14,7 +14,7 @@ class StripeController extends Controller
     private const MIN_AMOUNT = 100; // 1€
     private const MAX_AMOUNT = 1000000; // 10000€
     
-    // Définir les options de paiement en plusieurs fois disponibles
+    // définir les options de paiement en plusieurs fois
     private const INSTALLMENT_OPTIONS = [
         '3' => 3,  // 3 fois
         '4' => 4,  // 4 fois
@@ -74,7 +74,7 @@ class StripeController extends Controller
                 'capabilities' => $account->capabilities
             ]);
 
-            // Configuration de base pour la session Stripe
+            // config de base pour la session Stripe
             $sessionConfig = [
                 'payment_method_types' => ['card'],
                 'client_reference_id' => $commande->id,
@@ -110,7 +110,7 @@ class StripeController extends Controller
             ];
         }
 
-            // Ajout des informations de produit
+            // ajout des informations de produit
             $sessionConfig['line_items'] = [[
                 'price_data' => [
                     'currency' => 'eur',

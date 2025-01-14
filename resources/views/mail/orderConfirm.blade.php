@@ -181,6 +181,8 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         if (el) el.style.display = 'none';
     });
 
+    installmentsContainer.style.display = 'none';
+
     // reset les champs iban et bic si on change de mode de paiement
     if (value !== 'prelevement') {
         const ibanInput = document.getElementById('iban');

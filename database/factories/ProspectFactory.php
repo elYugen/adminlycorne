@@ -29,6 +29,7 @@ class ProspectFactory extends Factory
             'address' => fake()->address(),
             'postal_code' => fake()->countryCode(),
             'company' => fake()->name(),
+            'city' => fake()->city(),
             'phone_number' => fake()->phoneNumber(),
             'siret' => substr($faker->siret(false), 0, 14),
             'gender' => fake()->randomElement(['homme', 'femme']),

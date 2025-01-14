@@ -1,8 +1,7 @@
 @extends('layouts.base')
-@section('title', 'Gestion des commandes')
+@section('title', 'Gestion des bons de commandes')
 
 @section('styles')
-<!-- CSS DataTables -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 @endsection
 
@@ -12,7 +11,6 @@
 <div class="container">
     <h1 class="mt-4">Gestion des bons de commandes</h1>
 
-    <!-- Message de succès -->
     @if(session('success'))
     <div class="alert alert-success mt-3">
         {{ session('success') }}
@@ -20,9 +18,9 @@
     @endif
 
     <div class="mt-4 mb-4">
-        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#commandeModal" style="background-color: #b7b7c5; color: white;">
-            <i class="bi bi-person-plus"></i> Ajouter une commande
-        </button>
+        <a href="{{ route('orders.create') }}" class="btn" style="background-color: #b7b7c5; color: white;">
+            <i class="bi bi-person-plus"></i> Créer un bon de commande
+        </a>
     </div>
 
     <div class="table-responsive">
@@ -103,4 +101,3 @@
     });
 </script>
 @endsection
-@include('layouts.components.order_modal')

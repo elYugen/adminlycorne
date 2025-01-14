@@ -43,7 +43,7 @@ class OrderStatus extends Mailable
             ];
         });
 
-        // Création de l'URL sécurisée pour le paiement
+        // création de l'url pour le paiement
         $paymentUrl = route('orders.showCgv', [
             'commande' => $this->order->id,
             'token' => $this->paymentToken

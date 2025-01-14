@@ -25,7 +25,7 @@
         @endif
 
     <div class="mt-4 mb-4">
-        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #b7b7c5; color: white;">
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createprospect" style="background-color: #b7b7c5; color: white;">
             <i class="bi bi-person-plus"></i> Ajouter un prospect
         </button>
     </div>
@@ -45,21 +45,21 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($users as $user)
+                @foreach ($prospects as $prospect)
                 <tr>
-                    <td>{{ $user->id }}</td>
-                    <td>{{ $user->firstname }} {{ $user->lastname }} </td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->address }}, {{ $user->city }} {{ $user->postal_code }}</td>
-                    <td>{{ $user->phone_number }}</td>
-                    <td>{{ $user->company }}</td>
-                    <td>{{ $user->siret }}</td>
+                    <td>{{ $prospect->id }}</td>
+                    <td>{{ $prospect->firstname }} {{ $prospect->lastname }} </td>
+                    <td>{{ $prospect->email }}</td>
+                    <td>{{ $prospect->address }}, {{ $prospect->city }} {{ $prospect->postal_code }}</td>
+                    <td>{{ $prospect->phone_number }}</td>
+                    <td>{{ $prospect->company }}</td>
+                    <td>{{ $prospect->siret }}</td>
                     <td>
                         <div class="d-flex gap-1 h-100 align-items-center">
-                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}">
+                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editprospect{{ $prospect->id }}">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser{{ $user->id }}">
+                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteprospect{{ $prospect->id }}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
