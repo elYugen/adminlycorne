@@ -19,6 +19,9 @@
             height: 2px;
             margin: 10px 0;
         }
+        a {
+            color: #205558;
+        }
     </style>
 @endsection
 
@@ -47,7 +50,19 @@
     <br>
     <h1>Confirmation de commande {{ e($commande->numero_commande) }}</h1>
     <br>
+    <div class="mt-4">
+        <h3>Récapitulatif de la commande</h3>
+        <ul>
+            <li><strong>Date de création :</strong> {{ $commande->created_at->format('d/m/Y') }}</li>
+            <li><strong>Total :</strong> {{ number_format($commande->total_ttc, 2, ',', ' ') }} €</li>
+        </ul>
+    </div>
 
+    @if($commande->validatedAt)
+    <div class="alert alert-info mt-4">
+        Vous avez déjà validé cette commande le {{ \Carbon\Carbon::parse($commande->validatedAt)->format('d/m/Y') }}.
+    </div>
+    @else
     <form action="{{ route('orders.confirm', $commande->id) }}" method="post" data-token="{{ $token }}">
     @csrf
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -103,25 +118,41 @@
             <option value="12">Paiement en 12 fois</option>
         </select>
     </div>
-    
+
+    <!-- info pour le paiement par chèque -->
+    <div id="cheque-info" style="display: none; margin: 20px 0; padding: 15px; border: 1px solid #133a3f; border-radius: 5px;">
+        <p style="margin: 0; font-size: 14px;"><strong>Envoyer le paiement par chèque à :</strong></p>
+        <p style="margin: 5px 0; font-size: 14px;">
+            SAS L au carré<br>
+            2 impasse de la Longère<br>
+            15700 PLEAUX
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 14px; font-style: italic;">
+            Pour plus de simplicité merci d'indiquer le numéro de la commande au dos du chèque
+            <br>
+            La commande sera traitée à la réception
+        </p>
+    </div>
+
     <div class="form-check mt-4">
         <input type="checkbox" name="is_cgv_validated" id="is_cgv_validated" class="form-check-input" value="1" required>
-        <label for="is_cgv_validated" class="form-check-label">J'ai lu et j'accepte les <a href="{{ e(asset('CGV.pdf')) }}" target="_blank" rel="noopener noreferrer">conditions générales de ventes</a></label>
+        <label for="is_cgv_validated" class="form-check-label">J'ai lu et j'accepte les <a href="{{ e(asset('CGS.pdf')) }}" target="_blank" rel="noopener noreferrer">conditions générales de services</a></label>
     </div>
     
     <!-- bouton de confirmation apparait pour chèque et prélèvement -->
-    <button type="submit" id="confirm-button" class="btn mt-1" style="background-color: #362258; color: white; display: none;">
+    <button type="submit" id="confirm-button" class="btn mt-1" style="background-color: #133a3f; color: white; display: none;">
         Confirmer la commande
     </button>
+
     
     <!-- bouton Stripe apparait pour carte bancaire -->
     <div id="stripe-container" style="display: none;" class="mt-1 mb-1">
-        <button type="button" id="stripe-button" class="btn mt-1" style="background-color: #362258; color: white;">
+        <button type="button" id="stripe-button" class="btn mt-1" style="background-color: #133a3f; color: white;">
             Payer avec Stripe
         </button>
     </div>
 </form>
-
+@endif
 <div class="mt-5">
     <hr>
         <h3>Informations légales</h3>
@@ -139,8 +170,70 @@ const urlParams = new URLSearchParams(window.location.search);
 const paymentToken = urlParams.get('token');
 const VALID_PAYMENT_METHODS = ['prelevement', 'virement', 'cheque'];
 const VALID_PLANIFICATIONS = ['annuel', 'trimestriel', 'semestriel', 'mensuel'];
-//const IBAN_REGEX = ^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$;
-//const BIC_REGEX = ^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$;
+
+
+function isValidIBAN(iban) {
+    iban = iban.replace(/\s/g, '').toUpperCase();
+    
+    if (iban.length < 14 || iban.length > 34) {
+        return false;
+    }
+
+    const rearranged = iban.slice(4) + iban.slice(0, 4);
+    
+    let converted = '';
+    for (let i = 0; i < rearranged.length; i++) {
+        const char = rearranged.charAt(i);
+        const code = char.charCodeAt(0);
+        if (code >= 65 && code <= 90) { 
+            converted += (code - 55).toString();
+        } else {
+            converted += char;
+        }
+    }
+    
+    // calcul modulo
+    let remainder = '';
+    for (let i = 0; i < converted.length; i++) {
+        remainder = (parseInt(remainder + converted.charAt(i)) % 97).toString();
+    }
+    
+    // iban est valide si le reste est 1
+    return parseInt(remainder) === 1;
+}
+
+if (document.getElementById('iban')) {
+    const ibanInput = document.getElementById('iban');
+    const confirmButton = document.getElementById('confirm-button');
+    
+    ibanInput.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^A-Z0-9\s]/gi, '').toUpperCase();
+        
+        if (this.value.length > 0) {
+            if (isValidIBAN(this.value)) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+            }
+        } else {
+            this.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (document.getElementById('modalite_paiement').value === 'prelevement') {
+            const iban = ibanInput.value.replace(/\s/g, '');
+            if (!isValidIBAN(iban)) {
+                e.preventDefault();
+                alert('L\'IBAN saisi n\'est pas valide.');
+                ibanInput.focus();
+            }
+        }
+    });
+}
 
 // fonction de nettoyage des entrées
 function sanitizeInput(input) {
@@ -199,6 +292,7 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         case 'prelevement':
             ibanBicContainer.style.display = 'block';
             confirmButton.style.display = 'block';
+            document.getElementById('cheque-info').style.display = 'none';
             if (authorizationCheckbox) {
                 authorizationCheckbox.setAttribute('required', 'required');
             }
@@ -206,12 +300,14 @@ document.getElementById('modalite_paiement').addEventListener('change', function
         case 'virement':
             installmentsContainer.style.display = 'block';
             stripeContainer.style.display = 'block';
+            document.getElementById('cheque-info').style.display = 'none';
             if (authorizationCheckbox) {
                 authorizationCheckbox.removeAttribute('required');
             }
             break;
         case 'cheque':
             confirmButton.style.display = 'block';
+            document.getElementById('cheque-info').style.display = 'block';
             if (authorizationCheckbox) {
                 authorizationCheckbox.removeAttribute('required');
             }

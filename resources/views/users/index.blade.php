@@ -2,6 +2,30 @@
 @section('title', 'Gestion des utilisateurs')
 @section('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<style>
+    .page-item.active .page-link {
+        background-color: #133A3F !important;
+        border-color: #133A3F !important;
+        color: white !important;
+    }
+    
+    .page-link {
+        color: #133A3F !important;
+    }
+    
+    .page-item:first-child .page-link,
+    .page-item:last-child .page-link {
+        color: black !important;
+    }
+    
+    .page-link:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .page-link:focus {
+        box-shadow: 0 0 0 0.25rem rgba(19, 58, 63, 0.25);
+    }
+</style>
 @endsection
 
 @section('content')
@@ -27,7 +51,7 @@
     @endif
 
     <div class="mt-4 mb-4">
-        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #b7b7c5; color: white;">
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createUser" style="background-color: #205558; color: white;">
             <i class="bi bi-person-plus"></i> Ajouter un utilisateur
         </button>
     </div>
@@ -49,12 +73,14 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>
-                        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}">
+                        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editUser{{ $user->id }}" title="Modifier l'utilisateur">
                             <i class="bi bi-pencil"></i> 
                         </button>
-                        <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser{{ $user->id }}">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        @if(Auth::id() !== $user->id)
+                            <button type="button" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#deleteUser{{ $user->id }}" title="Supprimer l'utilisateur">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -79,6 +105,23 @@
             columnDefs: [
                 { orderable: false, targets: [3] }
             ]
+        });
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        // verif si mots de passe identique
+        $('#createUser form').on('submit', function(e) {
+            const password = $('#password').val();
+            const confirmation = $('#password_confirmation').val();
+            
+            if (password !== confirmation) {
+                e.preventDefault();
+                $('#password-error').show();
+                return false;
+            }
+            $('#password-error').hide();
+            return true;
         });
     });
 </script>

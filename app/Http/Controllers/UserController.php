@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BcUtilisateur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -11,8 +12,19 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = BcUtilisateur::all();
+        $users = BcUtilisateur::active()->get();
         return view('users.index', compact('users'));
+    }
+
+    public function delete(BcUtilisateur $bcuser)
+    {
+        if (Auth::id() === $bcuser->id) {
+            return redirect()->route('user.index')->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+        }
+
+        $bcuser->update(['deleted' => 1]);
+
+        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé avec succès');
     }
 
     public function create(Request $request)
@@ -20,9 +32,8 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:bc_utilisateurs,email',
-            'password' => 'required|string',
+            'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:revendeur,administrateur',
-
         ]);
 
         BcUtilisateur::create([
@@ -49,10 +60,4 @@ class UserController extends Controller
         return redirect()->route('user.index')->with('success', 'Utilisateur mis à jour avec succès');
     }
 
-    public function delete(BcUtilisateur $bcuser)
-    {
-        $bcuser->delete();
-
-        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé avec succès');
-    }
 }

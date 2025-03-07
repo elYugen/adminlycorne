@@ -17,18 +17,17 @@ use Illuminate\Support\Facades\Mail;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as PDF;
 use Webklex\PDFMerger\Facades\PDFMergerFacade;
 
-use function Ramsey\Uuid\v1;
 
 class OrderController extends Controller
 {
     public function index()
     {
-        $commandesQuery = BcCommandes::with(['client', 'produits', 'conseiller'])
+        $commandesQuery = BcCommandes::active()->with(['client', 'produits', 'conseiller'])
             ->when(Auth::user()->role === 'revendeur', function ($query) {
                 $query->where('conseiller_id', Auth::user()->id);
             });
                 
-        $commandes = $commandesQuery->get(); // charge toutes les commandes pour datatables
+        $commandes = $commandesQuery->get();
         $clients = Prospect::all();
         $produits = Produits::all();
         $conseillers = BcUtilisateur::select('id', 'name')->get();
@@ -36,15 +35,24 @@ class OrderController extends Controller
         return view('orders.index', compact('commandes', 'clients', 'produits', 'conseillers'));
     }
 
+    public function delete(BcCommandes $commande)
+    {
+        $commande->update(['deleted' => 1]);
+        return redirect()->route('orders.index')->with('success', 'Commande supprimée avec succès');
+    }
+
     public function create()
     {
         $clients = Prospect::all();
         $produits = Produits::all();
         $conseillers = BcUtilisateur::select('id', 'name')->get();
-
-        return view('orders.create', compact('clients', 'produits', 'conseillers'));
+    
+        $old = session()->getOldInput();
+        $oldProduits = [];
+    
+        return view('orders.create', compact('clients', 'produits', 'conseillers', 'old', 'oldProduits'));
     }
-
+    
     public function add(Request $request)
     {
         $request->validate([
@@ -52,12 +60,18 @@ class OrderController extends Controller
             //'modalite_paiement' => 'required|string',
             'produits' => 'required|array',
             'produits.*.produit_id' => 'required|exists:bc_produits,id',
-            'produits.*.quantite' => 'required|integer|min:1',
+            'produits.*.quantite' => 'required|regex:/^\d*[,.]?\d{0,2}$/',
             'produits.*.prix_ht' => 'required|numeric|min:0',
         ]);
     
+        // convertir les quantités du format français au format standard
+        $produits = collect($request->produits)->map(function ($produit) {
+            $produit['quantite'] = (float) str_replace(',', '.', str_replace(' ', '', $produit['quantite']));
+            return $produit;
+        })->toArray();
+    
         $totalHT = 0;
-        foreach ($request->produits as $produit) {
+        foreach ($produits as $produit) {
             $totalHT += $produit['quantite'] * $produit['prix_ht'];
         }
         $totalTTC = $totalHT * 1.2; // TVA à 20%
@@ -171,7 +185,7 @@ class OrderController extends Controller
         $token = $commande->payment_token;
 
         return view('mail.orderConfirm', compact('commande', 'token'));
-        }
+    }
 
     public function validateCgv(Request $request, BcCommandes $commande)
     {
@@ -238,8 +252,11 @@ class OrderController extends Controller
         ]);
 
         // verifie si l'url à le mot clé "success"
+        //if ($request->has('success') && ($request->success == 'true' || $request->success === true)) {
+            //session()->flash('success', 'Commande validée avec succès.');
+        //}
         if ($request->has('success') && ($request->success == 'true' || $request->success === true)) {
-            session()->flash('success', 'Commande validée avec succès.');
+            return redirect()->route('orders.index')->with('success', 'Commande validée avec succès.');
         }
 
         return view('mail.orderFinished', compact('commande'));

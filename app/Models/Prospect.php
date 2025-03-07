@@ -8,17 +8,11 @@ use Illuminate\Notifications\Notifiable;
 
 class Prospect extends Model
 {
-     /** @use HasFactory<\Database\Factories\UserFactory> */
-     use HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-     protected $table = 'bc_prospects';
+    protected $table = 'bc_prospects';
 
-     /**
-      * The attributes that are mass assignable.
-      *
-      * @var list<string>
-      */
-      protected $fillable = [
+    protected $fillable = [
         'firstname',
         'lastname',
         'email',
@@ -29,5 +23,11 @@ class Prospect extends Model
         'postal_code',
         'company',
         'siret',
+        'deleted'  
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('deleted', 0);
+    }
 }

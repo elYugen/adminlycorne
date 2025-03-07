@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #362258;">
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #133a3f;">
   <div class="container-fluid">
-    <a class="navbar-brand text-white" href="{{ route('orders.index')}}">Panel</a>
+    <a class="navbar-brand text-white d-flex align-center gap-2" href="{{ route('orders.index')}}">
+      <img src="{{ asset('iDdt5nrE4hFKh78S-logo-chouette-version-blanc.png')}}" style="height: 30px; width: auto;"> 
+      Panel</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

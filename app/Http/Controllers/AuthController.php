@@ -19,16 +19,21 @@ class AuthController extends Controller
     }
 
     public function authenticate(Request $request) {
-
         $credentials = $request->validate([ 
             'email' => ['required', 'email'], 
             'password' => ['required']
         ]);
 
+        $user = BcUtilisateur::where('email', $request->email)->first();
+
+        if ($user && $user->deleted) {
+            return back()->withErrors([
+                'email' => 'Votre compte a été désactivé',
+            ]);
+        }
+
         if (Auth::attempt($credentials)) {
-
             $request->session()->regenerate();
-
             return redirect()->intended('/orders');
         }
 

@@ -8,7 +8,8 @@
         <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-top: 20px; text-align: left;">
             <p>Bonjour {{ $firstname }},</p>
             
-            <p>Nous vous remercions pour votre commande. Nous sommes ravis de vous confirmer que votre commande a été enregistrée avec succès.</p>
+            <p>Nous vous remercions pour votre commande.</p>
+            <p>Pour finaliser votre commande il vous reste maintenant à choisir le mode de paiement en cliquant sur le bouton ci dessous</p>
             
             <h3 style="color: #444; margin-top: 20px;">Détails de la commande</h3>
             
@@ -33,7 +34,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 20px;">
-                <a href="{{ $payment_url }}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Procéder au Paiement</a>
+                <a href="{{ $payment_url }}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Choisir son mode de paiement</a>
             </div>
             
             <p style="margin-top: 20px; font-size: 14px; color: #666;">

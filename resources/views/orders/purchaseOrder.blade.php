@@ -31,6 +31,14 @@
             float: right;
         }
 
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #362258;
+            margin-bottom: 20px;
+        }
+
         .headerRight p {
             margin: 0;
             font-size: 11px;
@@ -110,6 +118,25 @@
             margin-bottom: 20px;
         }
 
+        .paymentTable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .paymentTable tr td {
+            padding: 5px 0;
+        }
+
+        .paymentTable tr.total-row {
+            border-top: 2px solid #362258;
+            padding-top: 10px;
+            margin-top: 5px;
+        }
+
+        .paymentTable td:last-child {
+            text-align: right;
+        }
+
         .orderPayment div {
             overflow: hidden; 
             margin-bottom: 5px;
@@ -174,13 +201,17 @@
             </div>
         </div>
         <div class="headerRight">
-            <h2>Bon de commande</h2>
-            <p>Nom du client : {{ $commande->client->lastname }} {{ $commande->client->firstname }}</p>
-            <p>Adresse : {{ $commande->client->address }}</p>
-            <p>Code postal : {{ $commande->client->postal_code }}</p>
-            <p>Ville : {{ $commande->client->city }}</p>
+            <div class="title">Bon de commande</div>
+            <h2>Client :</h2>
+            @if($commande->client->company)
             <p>Entreprise : {{ $commande->client->company }}</p>
             <p>Numéro siret : {{ $commande->client->siret }}</p>
+            @else
+            <p><strong>{{ $commande->client->firstname }} {{ $commande->client->lastname }}</strong></p>
+            @endif
+            <p>{{ $commande->client->address }}</p>
+            <p>Code postal : {{ $commande->client->postal_code }}</p>
+            <p>Ville : {{ $commande->client->city }}</p>
             <p>Tél : {{ $commande->client->phone_number }}</p>
             <p>Mail : {{ $commande->client->email }}</p>
         </div>
@@ -211,25 +242,27 @@
     </table>
 
     <div class="orderPayment">
-        <div>
-            <p><strong>Total HT :</strong></p>
-            <p>{{ number_format($commande->total_ht, 2) }} €</p>
-        </div>
-        <div>
-            <p><strong>TVA 20% :</strong></p>
-            <p>{{ number_format($commande->total_ht * 0.2, 2) }} €</p>
-        </div>
-        <div class="total-row">
-            <p><strong>Total TTC :</strong></p>
-            <p>{{ number_format($commande->total_ttc, 2) }} €</p>
-        </div>
+        <table class="paymentTable">
+            <tr>
+                <td><strong>Total HT :</strong></td>
+                <td>{{ number_format($commande->total_ht, 2) }} €</td>
+            </tr>
+            <tr>
+                <td><strong>TVA 20% :</strong></td>
+                <td>{{ number_format($commande->total_ht * 0.2, 2) }} €</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>Total TTC :</strong></td>
+                <td>{{ number_format($commande->total_ttc, 2) }} €</td>
+            </tr>
+        </table>
     </div>
 
-    <div class="orderValidation">
+    <!--<div class="orderValidation">
         <div class="orderValidationDate">
             <p>Fait le : {{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</p>
         </div>
-    </div>
+    </div>-->
 
     <footer>L AU CARRE - SAS au capital de 2506 € - Granoux 15 700 PLEAUX - Siret : 804 485 167 000 22 <br> APE : 8299Z - RCS AURILLAC B 804 485 167</footer>
 </body>

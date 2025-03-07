@@ -23,7 +23,8 @@ class BcCommandes extends Model
         'planification',
         'payment_token',
         'payment_link_expires_at',
-        'installments_count'
+        'installments_count',
+        'deleted'
     ];
 
     public function isPaid()
@@ -47,5 +48,10 @@ class BcCommandes extends Model
     public function produits()
     {
         return $this->belongsToMany(Produits::class, 'bc_commande_produits', 'commande_id', 'produit_id')->withPivot('quantite', 'prix_unitaire_ht', 'prix_ht'); 
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('deleted', 0);
     }
 }

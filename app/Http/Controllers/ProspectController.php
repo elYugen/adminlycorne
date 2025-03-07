@@ -10,8 +10,7 @@ class ProspectController extends Controller
 {
     public function index()
     {
-        $prospects = Prospect::all();
-
+        $prospects = Prospect::active()->get();
         return view('prospect.index', compact('prospects'));
     }
 
@@ -36,7 +35,7 @@ class ProspectController extends Controller
                 ->withInput()
                 ->withErrors(['error' => 'Le nom ou l\'entreprise doit être renseigné']);
         }
-    
+
         Prospect::create([
             'firstname' => $request->firstname,
             'lastname' => $request->lastname,
@@ -84,19 +83,21 @@ class ProspectController extends Controller
 
     public function delete(Prospect $prospect)
     {
-        $prospect->delete();
-        return redirect()->route('prospect.index')->with('success', 'Utilisateur supprimé avec succès');
-
+        $prospect->update(['deleted' => 1]);
+        return redirect()->route('prospect.index')->with('success', 'Prospect supprimé avec succès');
     }
 
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $clients = Prospect::where('firstname', 'LIKE', "%{$query}%")
-            ->orWhere('lastname', 'LIKE', "%{$query}%")
-            ->orWhere('email', 'LIKE', "%{$query}%")
-            ->orWhere('company', 'LIKE', "%{$query}%")
-            ->get(['id', 'firstname', 'lastname', 'email', 'phone_number', 'company', 'city']);
+        $clients = Prospect::active() 
+            ->where(function($q) use ($query) {
+                $q->where('firstname', 'LIKE', "%{$query}%")
+                  ->orWhere('lastname', 'LIKE', "%{$query}%")
+                  ->orWhere('email', 'LIKE', "%{$query}%")
+                  ->orWhere('company', 'LIKE', "%{$query}%");
+            })
+            ->get(['id', 'firstname', 'lastname', 'email', 'phone_number', 'company', 'city', 'postal_code', 'address']);
     
         return response()->json($clients);
     }

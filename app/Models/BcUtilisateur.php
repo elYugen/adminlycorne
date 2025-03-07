@@ -26,7 +26,13 @@ class BcUtilisateur extends Authenticatable
         'email',
         'password',
         'role',
+        'deleted'
      ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('deleted', 0);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

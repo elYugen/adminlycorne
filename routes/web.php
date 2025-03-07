@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/create', [OrderController::class, 'create'])->name('orders.create');
-
+        Route::delete('/orders/{commande}', [OrderController::class, 'delete'])->name('orders.delete');
         Route::post('/add', [OrderController::class, 'add'])->name('orders.add');
         Route::put('/processed/{commande}', [OrderController::class, 'processedOrder'])->name('orders.processed');
     });

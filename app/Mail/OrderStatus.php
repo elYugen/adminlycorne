@@ -28,7 +28,7 @@ class OrderStatus extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Statut de la commande',
+            subject: 'Confirmation de commande',
         );
     }
 

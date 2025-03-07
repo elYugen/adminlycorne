@@ -3,6 +3,36 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<style>
+    .page-item.active .page-link {
+        background-color: #133A3F !important;
+        border-color: #133A3F !important;
+        color: white !important;
+    }
+    
+    .page-link {
+        color: #133A3F !important;
+    }
+    
+    .page-item:first-child .page-link,
+    .page-item:last-child .page-link {
+        color: black !important;
+    }
+    
+    .page-link:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .page-link:focus {
+        box-shadow: 0 0 0 0.25rem rgba(19, 58, 63, 0.25);
+    }
+    .validation-column {
+        min-width: 100px;
+    }
+    .order-column {
+        min-width: 200px;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -16,10 +46,19 @@
         {{ session('success') }}
     </div>
     @endif
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
     <div class="mt-4 mb-4">
-        <a href="{{ route('orders.create') }}" class="btn" style="background-color: #b7b7c5; color: white;">
-            <i class="bi bi-person-plus"></i> Créer un bon de commande
+        <a href="{{ route('orders.create') }}" class="btn" style="background-color: #205558; color: white;">
+            <i class="bi bi-newspaper"></i> Créer un bon de commande
         </a>
     </div>
 
@@ -27,20 +66,24 @@
         <table class="table table-striped table-hover commandes-table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th class="order-column">#</th>
                     <th>Client</th>
                     <th>Date</th>
                     <th>Produits</th>
                     <th>Total HT</th>
                     <th>Total TTC</th>
-                    <th>Validé le</th>
-                    <th>Traité</th>
+                    <th class="validation-column">Validé le</th>
+                    <th>Statut</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($commandes as $commande)
                 <tr>
-                    <td>{{ $commande->numero_commande }}</td>
+                    <td>{{ $commande->numero_commande }}                         
+                        <a href="{{ asset('bc/' . $commande->numero_commande . '.pdf') }}" target="_blank" class="btn btn-sm bg-transparent p-0 border-0" data-bs-toggle="tooltip" title="Voir le PDF">
+                            <i class="bi bi-file-pdf" style="color: #133a3f; font-size: 1.2rem;"></i>
+                        </a>
+                    </td>
                     <td>{{ $commande->client->firstname }} {{ $commande->client->lastname }}</td>
                     <td>{{ \Carbon\Carbon::parse($commande->date_commande)->format('d/m/Y') }}</td>
                     <td>
@@ -50,18 +93,36 @@
                     </td>
                     <td>{{ $commande->total_ht }} €</td>
                     <td>{{ $commande->total_ttc }} €</td>
-                    <td>{{ $commande->validatedAt ? \Carbon\Carbon::parse($commande->validatedAt)->format('d/m/Y') : 'Non validé' }}</td>
+                    <td>
+                        @if($commande->validatedAt)
+                            {{ \Carbon\Carbon::parse($commande->validatedAt)->format('d/m/Y') }}
+                        @else
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted">Non validé</span>
+                                <a href="{{ route('orders.showCgv', $commande->id) . '?token=' . $commande->payment_token }}" class="text-decoration-none text-info" onclick="event.stopPropagation();" target="_blank" data-bs-toggle="tooltip" title="Valider la commande"><i class="bi bi-file-text" style="color: #133a3f;"></i></a>
+                            </div>
+                        @endif
+                    </td>
                     <td>
                         @if($commande->isProcessed)
-                            Traité
+                            Commande Traitée
                         @else
-                            <div class="d-flex align-items-center gap-1">
-                                Non traité
-                                <form action="{{ route('orders.processed', $commande->id) }}" method="POST">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-muted">Non traité</span>
+                                <form action="{{ route('orders.processed', $commande->id) }}" method="POST" style="margin: 0;">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="isProcessed" value="1">
-                                    <button type="submit" class="btn btn-sm"><i class="bi bi-check-lg"></i></button>
+                                    <button type="submit" class="btn btn-sm bg-transparent p-0 border-0 text-decoration-none" data-bs-toggle="tooltip" title="Traiter la commande">
+                                        <i class="bi bi-check-circle-fill" style="color: #133a3f; font-size: 0.9rem;"></i>
+                                    </button>
+                                </form>
+                                <form action="{{ route('orders.delete', $commande->id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm bg-transparent p-0 border-0 text-decoration-none" data-bs-toggle="tooltip" title="Supprimer la commande">
+                                        <i class="bi bi-trash" style="color: #dc3545; font-size: 0.9rem;"></i>
+                                    </button>
                                 </form>
                             </div>
                         @endif
@@ -89,14 +150,33 @@
             responsive: true,
             autoWidth: false,
             columnDefs: [
-                { orderable: false, targets: [7] },
                 { 
-                targets: 2, // cible la colonne date
-                type: 'date-eu' // type de date au format europe
+                    targets: 2,
+                    type: 'date-eu'
+                },
+                {
+                    targets: 7,
+                    type: 'string',
+                    render: function(data, type, row) {
+                        if (type === 'display') {
+                            return data;
+                        }
+                        return data.includes('Commande Traitée') ? 'Traitée' : 'Non traité';
+                    }
+                },
+                {
+                    targets: 7,
+                    orderable: false,
+                    searchable: false
                 }
             ],
-            order: [[2, 'desc']],
+            order: [[2, 'asc']],
             pageLength: 10, // nombre max de ligne sur la pagination
+        });
+    
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
     });
 </script>
